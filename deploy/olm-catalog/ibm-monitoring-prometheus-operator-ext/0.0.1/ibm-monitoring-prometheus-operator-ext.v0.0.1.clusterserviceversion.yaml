@@ -1,0 +1,242 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "monitoring.operator.ibm.com/v1alpha1",
+          "kind": "PrometheusExt",
+          "metadata": {
+            "name": "ibm-monitoring"
+          },
+          "spec": {
+            "alertManagerConfig": {
+              "imageRepo": "",
+              "imageTag": "v0.15.0-build.1",
+              "serviceAccount": "ibm-monitoring-prometheus-operator-ext",
+              "servicePort": 9093
+            },
+            "certs": {
+              "caSecret": "cluster-ca-cert",
+              "issuer": "icp-ca-issuer",
+              "monitoringClientSecret": "ibm-monitoring-client-certs",
+              "monitoringSecret": "ibm-monitoring-certs",
+              "provider": "certmanager"
+            },
+            "clusterAddress": "icp-console.apps.dybo-ocp4.os.fyre.ibm.com",
+            "clusterDomain": "cluster.local",
+            "clusterName": "mycluster",
+            "clusterPort": 8443,
+            "grafanaSvcName": "ibm-monitoring-grafana",
+            "grafanaSvcPort": 8090,
+            "iamProvider": {
+              "idManagementSvc": "platform-identity-management",
+              "idManagementSvcPort": 4500,
+              "idProviderSvc": "platform-identity-provider",
+              "idProviderSvcPort": 4300,
+              "namespace": "kube-system"
+            },
+            "imagePullSecrets": [
+              "infra-registry-key"
+            ],
+            "prometheusConfig": {
+              "imageRepo": "",
+              "imageTag": "v2.8.0-build.1",
+              "retention": "24h",
+              "serviceAccount": "ibm-monitoring-prometheus-operator-ext",
+              "servicePort": 9090
+            },
+            "routerImage": "",
+            "storageClassName": "rook-ceph-block-internal"
+          }
+        }
+      ]
+    capabilities: Basic Install
+  name: ibm-monitoring-prometheus-operator-ext.v0.0.1
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: PrometheusExt will start Prometheus and Alertmanager instances
+        with RBAC enabled. It will also enable Multicloud monitoring
+      kind: PrometheusExt
+      name: prometheusexts.monitoring.operator.ibm.com
+      version: v1alpha1
+  description: Placeholder description
+  displayName: IBM Monitoring Prometheus Operator Extension
+  install:
+    spec:
+      deployments:
+      - name: ibm-monitoring-prometheus-operator-ext
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              name: ibm-monitoring-prometheus-operator-ext
+          strategy: {}
+          template:
+            metadata:
+              labels:
+                name: ibm-monitoring-prometheus-operator-ext
+            spec:
+              containers:
+              - command:
+                - ibm-monitoring-prometheus-operator-ext
+                env:
+                - name: WATCH_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['olm.targetNamespaces']
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: OPERATOR_NAME
+                  value: ibm-monitoring-prometheus-operator-ext
+                image: REPLACE_IMAGE
+                imagePullPolicy: Always
+                name: ibm-monitoring-prometheus-operator-ext
+                resources: {}
+              serviceAccountName: ibm-monitoring-prometheus-operator-ext
+      permissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          - services
+          - endpoints
+          - persistentvolumeclaims
+          - events
+          - configmaps
+          - secrets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - apps
+          resources:
+          - deployments
+          - daemonsets
+          - replicasets
+          - statefulsets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - servicemonitors
+          - prometheuses
+          - alertmanagers
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - certmanager.k8s.io
+          resources:
+          - certificates/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - apps
+          - ""
+          - extensions
+          - certmanager.k8s.io
+          - monitoring.coreos.com
+          resourceNames:
+          - ibm-monitoring-prometheus-operator-ext
+          resources:
+          - deployments/finalizers
+          - prometheuses/finalizers
+          - alertmanagers/finalizers
+          - services/finalizers
+          - configmaps/finalizers
+          - secrets/finalizers
+          - deployments/finalizers
+          - certificates/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          verbs:
+          - get
+        - apiGroups:
+          - monitoring.operator.ibm.com
+          resources:
+          - prometheusexts
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - monitoring.operator.ibm.com
+          resources:
+          - exporters
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - extensions
+          resources:
+          - ingresses
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - certmanager.k8s.io
+          resources:
+          - certificates
+          - issuers
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        serviceAccountName: ibm-monitoring-prometheus-operator-ext
+    strategy: deployment
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  maturity: alpha
+  provider: {}
+  replaces: ibm-monitoring-prometheus-operator-ext.v0.0.0
+  version: 0.0.1

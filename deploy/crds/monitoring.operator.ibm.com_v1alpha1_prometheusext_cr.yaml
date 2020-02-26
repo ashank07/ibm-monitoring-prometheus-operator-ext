@@ -1,0 +1,40 @@
+apiVersion: monitoring.operator.ibm.com/v1alpha1
+kind: PrometheusExt
+metadata:
+  name: ibm-monitoring
+spec:
+    clusterName: mycluster
+    clusterDomain: cluster.local
+    storageClassName: rook-ceph-block-internal
+    clusterAddress: "icp-console.apps.dybo-ocp4.os.fyre.ibm.com"
+    clusterPort: 8443
+    grafanaSvcName: "ibm-monitoring-grafana"
+    grafanaSvcPort: 8090
+    imagePullSecrets:
+    - infra-registry-key
+    routerImage: ""
+    prometheusConfig:
+      serviceAccount: ibm-monitoring-prometheus-operator-ext
+      imageRepo: ""
+      imageTag: v2.8.0-build.1
+      retention: 24h
+      servicePort: 9090
+    alertManagerConfig:
+      serviceAccount: ibm-monitoring-prometheus-operator-ext
+      imageRepo: ""
+      imageTag: v0.15.0-build.1
+      servicePort: 9093
+    certs:
+      caSecret: cluster-ca-cert
+      provider: certmanager
+      monitoringSecret: ibm-monitoring-certs
+      monitoringClientSecret: ibm-monitoring-client-certs
+      issuer: icp-ca-issuer 
+    iamProvider:
+      namespace: kube-system
+      idProviderSvc: platform-identity-provider
+      idProviderSvcPort: 4300
+      idManagementSvc: platform-identity-management
+      idManagementSvcPort: 4500
+
+        

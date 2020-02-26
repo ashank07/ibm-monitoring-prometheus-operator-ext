@@ -1,0 +1,261 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: prometheusexts.monitoring.operator.ibm.com
+spec:
+  group: monitoring.operator.ibm.com
+  names:
+    kind: PrometheusExt
+    listKind: PrometheusExtList
+    plural: prometheusexts
+    singular: prometheusext
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: PrometheusExt will start Prometheus and Alertmanager instances
+        with RBAC enabled. It will also enable Multicloud monitoring
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: PrometheusExtSpec defines the desired state of PrometheusExt
+          properties:
+            alertManagerConfig:
+              description: AlertManagerConfig defines configuration of AlertManager
+                object
+              properties:
+                imageRepo:
+                  type: string
+                imageTag:
+                  type: string
+                pvSize:
+                  type: string
+                resource:
+                  description: ResourceRequirements describes the compute resource
+                    requirements.
+                  properties:
+                    limits:
+                      additionalProperties:
+                        type: string
+                      description: 'Limits describes the maximum amount of compute
+                        resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                    requests:
+                      additionalProperties:
+                        type: string
+                      description: 'Requests describes the minimum amount of compute
+                        resources required. If Requests is omitted for a container,
+                        it defaults to Limits if that is explicitly specified, otherwise
+                        to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                  type: object
+                serviceAccount:
+                  type: string
+                servicePort:
+                  format: int32
+                  type: integer
+              required:
+              - imageRepo
+              - imageTag
+              - servicePort
+              type: object
+            certs:
+              description: Certs defines certification used by monitoring stack
+              properties:
+                caSecret:
+                  description: All certificates for monitoring stack should be signed
+                    by this CA
+                  type: string
+                issuer:
+                  description: The issure name. It is used when provider is certmanager
+                  type: string
+                monitoringClientSecret:
+                  description: Define monitoring stack client(prometheus, exporters)'s
+                    tls cert secret. It will not be recreated when existing It can
+                    be created by either this operator or prometheus operator. Make
+                    sure secret name defined by both operator same
+                  type: string
+                monitoringSecret:
+                  description: Prometheus and AlertManager' tls cert. Define the secret
+                    name. It will not be recreated when existing It can be created
+                    by either this operator or prometheus operator. Make sure secret
+                    name defined by both operator same
+                  type: string
+                provider:
+                  description: Specify how secrets are generated. It can be empty,
+                    certmanager or ocp certmanager does not work before go module
+                    confict issue being resolved but it should be the recommanded
+                    one. When it is empty operator will use existing sercret Secret
+                    will not be regenerated if secret with secretName exists
+                  type: string
+              required:
+              - caSecret
+              - issuer
+              - monitoringClientSecret
+              - monitoringSecret
+              type: object
+            clusterAddress:
+              description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                Important: Run "operator-sdk generate k8s" to regenerate code after
+                modifying this file Add custom validation using kubebuilder tags:
+                https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html'
+              type: string
+            clusterDomain:
+              type: string
+            clusterName:
+              type: string
+            clusterPort:
+              format: int32
+              type: integer
+            grafanaSvcName:
+              description: Grafana integrated with this CR
+              type: string
+            grafanaSvcPort:
+              format: int32
+              type: integer
+            iamProvider:
+              description: IAMProvider defines information for iam
+              properties:
+                idManagementSvc:
+                  type: string
+                idManagementSvcPort:
+                  format: int32
+                  type: integer
+                idProviderSvc:
+                  type: string
+                idProviderSvcPort:
+                  format: int32
+                  type: integer
+                namespace:
+                  type: string
+              required:
+              - idManagementSvc
+              - idManagementSvcPort
+              - idProviderSvc
+              - idProviderSvcPort
+              - namespace
+              type: object
+            imagePolicy:
+              description: PullPolicy describes a policy for if/when to pull a container
+                image
+              type: string
+            imagePullSecrets:
+              items:
+                type: string
+              type: array
+            mcmMonitor:
+              description: MCMMonitor defines multimple cloud monitoring related information
+              properties:
+                helpeImage:
+                  description: MCM helper image for some initiallizing work
+                  type: string
+                image:
+                  description: Image for mcm monitoring controller
+                  type: string
+                isHubCluster:
+                  description: If it is running on MCM Hub cluster or not
+                  type: boolean
+              type: object
+            prometheusConfig:
+              description: PrometheusConfig defines configuration of Prometheus object
+              properties:
+                evaluationInterval:
+                  type: string
+                imageRepo:
+                  type: string
+                imageTag:
+                  type: string
+                nodeCPUThreshold:
+                  type: integer
+                nodeMemoryThreshold:
+                  type: integer
+                pvSize:
+                  type: string
+                resource:
+                  description: ResourceRequirements describes the compute resource
+                    requirements.
+                  properties:
+                    limits:
+                      additionalProperties:
+                        type: string
+                      description: 'Limits describes the maximum amount of compute
+                        resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                    requests:
+                      additionalProperties:
+                        type: string
+                      description: 'Requests describes the minimum amount of compute
+                        resources required. If Requests is omitted for a container,
+                        it defaults to Limits if that is explicitly specified, otherwise
+                        to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                  type: object
+                retention:
+                  type: string
+                routerResource:
+                  description: ResourceRequirements describes the compute resource
+                    requirements.
+                  properties:
+                    limits:
+                      additionalProperties:
+                        type: string
+                      description: 'Limits describes the maximum amount of compute
+                        resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                    requests:
+                      additionalProperties:
+                        type: string
+                      description: 'Requests describes the minimum amount of compute
+                        resources required. If Requests is omitted for a container,
+                        it defaults to Limits if that is explicitly specified, otherwise
+                        to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                  type: object
+                scrapeInterval:
+                  type: string
+                serviceAccount:
+                  type: string
+                servicePort:
+                  format: int32
+                  type: integer
+              required:
+              - imageRepo
+              - nodeCPUThreshold
+              - nodeMemoryThreshold
+              - serviceAccount
+              - servicePort
+              type: object
+            routerImage:
+              type: string
+            storageClassName:
+              type: string
+          required:
+          - clusterAddress
+          - clusterDomain
+          - clusterName
+          - clusterPort
+          - grafanaSvcName
+          - grafanaSvcPort
+          - storageClassName
+          type: object
+        status:
+          description: PrometheusExtStatus defines the observed state of PrometheusExt
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
