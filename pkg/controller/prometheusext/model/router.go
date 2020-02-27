@@ -187,6 +187,7 @@ type luaUtilsParas struct {
 	Namespace         string
 	PrometheusSvcName string
 	PrometheusSvcPort string
+	ClusterDomain     string
 	//TODO: are the two parameters right? same as NewProLuaCm
 	GrafanaSvcName string
 	GrafanaSvcPort string
@@ -203,8 +204,19 @@ type luaUtilsParas struct {
 func NewProLuaUtilsCm(cr *promext.PrometheusExt) (*v1.ConfigMap, error) {
 
 	var tplBuffer bytes.Buffer
+	clusterDomain := "cluster.local"
+	if cr.Spec.ClusterDomain != "" {
+		clusterDomain = cr.Spec.ClusterDomain
+
+	}
+	clusterName := "mycluster"
+	if cr.Spec.ClusterName != "" {
+		clusterName = cr.Spec.ClusterName
+
+	}
 	paras := luaUtilsParas{
-		ClusterName:          cr.Spec.ClusterName,
+		ClusterDomain:        clusterDomain,
+		ClusterName:          clusterName,
 		Namespace:            cr.Namespace,
 		PrometheusSvcName:    PromethuesName(cr),
 		PrometheusSvcPort:    fmt.Sprintf("%d", cr.Spec.PrometheusConfig.ServicePort),
