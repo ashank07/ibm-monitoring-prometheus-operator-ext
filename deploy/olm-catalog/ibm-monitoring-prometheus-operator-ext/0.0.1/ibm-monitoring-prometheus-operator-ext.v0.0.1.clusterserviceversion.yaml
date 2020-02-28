@@ -12,9 +12,10 @@ metadata:
           },
           "spec": {
             "alertManagerConfig": {
-              "imageRepo": "",
+              "imageRepo": "hyc-cloud-private-release-docker-local.artifactory.swg-devops.com/ibmcom-amd64/alertmanager",
               "imageTag": "v0.15.0-build.1",
-              "serviceAccount": "ibm-monitoring-prometheus-operator-ext",
+              "logLevl": "debug",
+              "serviceAccount": "default",
               "servicePort": 9093
             },
             "certs": {
@@ -41,13 +42,16 @@ metadata:
               "infra-registry-key"
             ],
             "prometheusConfig": {
-              "imageRepo": "",
+              "imageRepo": "hyc-cloud-private-release-docker-local.artifactory.swg-devops.com/ibmcom-amd64/prometheus",
               "imageTag": "v2.8.0-build.1",
+              "logLevl": "debug",
+              "nodeCPUThreshold": 85,
+              "nodeMemoryThreshold": 8,
               "retention": "24h",
-              "serviceAccount": "ibm-monitoring-prometheus-operator-ext",
+              "serviceAccount": "default",
               "servicePort": 9090
             },
-            "routerImage": "",
+            "routerImage": "hyc-cloud-private-release-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-management-ingress:2.5.0",
             "storageClassName": "rook-ceph-block-internal"
           }
         }

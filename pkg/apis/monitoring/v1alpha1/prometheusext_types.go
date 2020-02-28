@@ -70,6 +70,7 @@ type PrometheusConfig struct {
 	ServicePort         int32                   `json:"servicePort"`
 	NodeMemoryThreshold int                     `json:"nodeMemoryThreshold"`
 	NodeCPUThreshold    int                     `json:"nodeCPUThreshold"`
+	LogLevel            string                  `json:"logLevel,omitempty"`
 }
 
 // AlertManagerConfig defines configuration of AlertManager object
@@ -80,6 +81,7 @@ type AlertManagerConfig struct {
 	PVSize             string                  `json:"pvSize,omitempty"`
 	ServicePort        int32                   `json:"servicePort"`
 	Resources          v1.ResourceRequirements `json:"resource,omitempty"`
+	LogLevel           string                  `json:"logLevel,omitempty"`
 }
 
 // Certs defines certification used by monitoring stack

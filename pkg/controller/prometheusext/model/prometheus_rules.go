@@ -17,16 +17,145 @@
 package model
 
 import (
+	"bytes"
+	"html/template"
+
+	promext "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
 	promv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
-//DefaultPromethuesRules is a dictionary to stor defaulat prometheus rules information
-var DefaultPromethuesRules map[string]*promv1.PrometheusRule
+//defaultPromethuesRules is a dictionary to stor default prometheus rules information
+var (
+	defaultPromethuesRules map[PrometheusRuleName]*promv1.PrometheusRule
+	nodeMemUsageExprTempl  *template.Template
+	nodeMemUsageDesTempl   *template.Template
+	highCPUExprTempl       *template.Template
+	highCPUDesTempl        *template.Template
+)
 
+const (
+	nodeMemUsageExpr = `((node_memory_MemTotal_bytes - (node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes))/ node_memory_MemTotal_bytes) * 100 > {{.NodeMemoryUsage}}`
+	nodeMemUsageDes  = `{{ "{{ " }} $labels.instance {{ " }}" }}: Memory usage is above the {{.NodeMemoryUsage}}% threshold.  The current value is: {{ "{{ " }} $value {{ " }}" }}.`
+	highCPUExpr      = `(100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > {{.HighCPUUsage}}`
+	highCPUDes       = `{{ "{{ " }} $labels.instance {{ " }}" }}: CPU usage is above the {{ .HighCPUUsage }}% threshold.  The current value is: {{ "{{ " }} $value {{ " }}" }}.`
+	// NodeMem is rule name for high node memory usage
+	NodeMem = PrometheusRuleName("node-memory-usage")
+	//NodeCPU is rule name for high for cpu usage
+	NodeCPU = PrometheusRuleName("high-cpu-usage")
+	//PodTerm is rule name for pods terminateion
+	PodTerm = PrometheusRuleName("pods-terminated")
+	//PodRestart is rule name for pods restarted
+	PodRestart = PrometheusRuleName("pods-restarting")
+	//FailedJob is rule name for failed jobs
+	FailedJob   = PrometheusRuleName("failed-jobs")
+	summary     = "summary"
+	description = "description"
+)
+
+type nodeMemRulePara struct {
+	NodeMemoryUsage int
+}
+type nodeCPURulePara struct {
+	HighCPUUsage int
+}
+
+//PrometheusRuleName defines prometheus rule names
+type PrometheusRuleName string
+
+//DefaultPrometheusRules return dictionary for default prometheus rules
+func DefaultPrometheusRules(cr *promext.PrometheusExt) (map[PrometheusRuleName]*promv1.PrometheusRule, error) {
+	var tplBuffer bytes.Buffer
+	memPara := nodeMemRulePara{
+		NodeMemoryUsage: cr.Spec.PrometheusConfig.NodeMemoryThreshold,
+	}
+	cpuPara := nodeCPURulePara{
+		HighCPUUsage: cr.Spec.PrometheusConfig.NodeCPUThreshold,
+	}
+	//node memory usage
+	if err := nodeMemUsageExprTempl.Execute(&tplBuffer, memPara); err != nil {
+		return nil, err
+	}
+	defaultPromethuesRules[NodeMem].Spec.Groups[0].Rules[0].Expr.StrVal = tplBuffer.String()
+	tplBuffer.Reset()
+
+	if err := nodeMemUsageDesTempl.Execute(&tplBuffer, memPara); err != nil {
+		return nil, err
+	}
+	defaultPromethuesRules[NodeMem].Spec.Groups[0].Rules[0].Annotations[description] = tplBuffer.String()
+	tplBuffer.Reset()
+	//node cpu usage
+	if err := highCPUExprTempl.Execute(&tplBuffer, cpuPara); err != nil {
+		return nil, err
+	}
+	defaultPromethuesRules[NodeCPU].Spec.Groups[0].Rules[0].Expr.StrVal = tplBuffer.String()
+	tplBuffer.Reset()
+
+	if err := highCPUDesTempl.Execute(&tplBuffer, cpuPara); err != nil {
+		return nil, err
+	}
+	defaultPromethuesRules[NodeCPU].Spec.Groups[0].Rules[0].Annotations[description] = tplBuffer.String()
+	tplBuffer.Reset()
+
+	return defaultPromethuesRules, nil
+
+}
+
+//create immutable rules
 func init() {
-	DefaultPromethuesRules = make(map[string]*promv1.PrometheusRule)
-	DefaultPromethuesRules["pods-terminated"] = &promv1.PrometheusRule{
+	nodeMemUsageExprTempl = template.Must(template.New("NodeMemUsageExpr").Parse(nodeMemUsageExpr))
+	nodeMemUsageDesTempl = template.Must(template.New("NodeMemUsageDes").Parse(nodeMemUsageDes))
+	highCPUExprTempl = template.Must(template.New("HighCPUExpr").Parse(highCPUExpr))
+	highCPUDesTempl = template.Must(template.New("HighCPUDes").Parse(highCPUDes))
+
+	defaultPromethuesRules = make(map[PrometheusRuleName]*promv1.PrometheusRule)
+	defaultPromethuesRules[NodeMem] = &promv1.PrometheusRule{
+		Spec: promv1.PrometheusRuleSpec{
+			Groups: []promv1.RuleGroup{
+				{
+					Name: "NodeMemoryUsage",
+					Rules: []promv1.Rule{
+						{
+							Alert: "NodeMemoryUsage",
+							Expr: intstr.IntOrString{
+								Type:   intstr.String,
+								StrVal: "",
+							},
+							For: "5m",
+							Annotations: map[string]string{
+								description: "",
+								summary:     `{{ "{{ " }}$labels.instance{{ " }}" }}: High memory usage detected`,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	defaultPromethuesRules[NodeCPU] = &promv1.PrometheusRule{
+		Spec: promv1.PrometheusRuleSpec{
+			Groups: []promv1.RuleGroup{
+				{
+					Name: "HighCPUUsage",
+					Rules: []promv1.Rule{
+						{
+							Alert: "HighCPUUsage",
+							Expr: intstr.IntOrString{
+								Type:   intstr.String,
+								StrVal: "",
+							},
+							For: "5m",
+							Annotations: map[string]string{
+								description: "",
+								summary:     "High CPU Usage",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	defaultPromethuesRules[PodTerm] = &promv1.PrometheusRule{
 		Spec: promv1.PrometheusRuleSpec{
 			Groups: []promv1.RuleGroup{
 				{
@@ -39,8 +168,8 @@ func init() {
 								StrVal: `sum_over_time(kube_pod_container_status_terminated_reason{reason!="Completed"}[1h]) > 0`,
 							},
 							Annotations: map[string]string{
-								"description": `Pod {{ "{{ " }} $labels.pod {{ " }}" }} in namespace {{ "{{ " }} $labels.namespace {{ " }}" }} has a termination status other than completed.`,
-								"summary":     `Pod was terminated`,
+								description: `Pod {{ "{{ " }} $labels.pod {{ " }}" }} in namespace {{ "{{ " }} $labels.namespace {{ " }}" }} has a termination status other than completed.`,
+								summary:     `Pod was terminated`,
 							},
 						},
 					},
@@ -49,7 +178,7 @@ func init() {
 		},
 	}
 
-	DefaultPromethuesRules["pods-restarting"] = &promv1.PrometheusRule{
+	defaultPromethuesRules[PodRestart] = &promv1.PrometheusRule{
 		Spec: promv1.PrometheusRuleSpec{
 			Groups: []promv1.RuleGroup{
 				{
@@ -62,8 +191,8 @@ func init() {
 								StrVal: `increase(kube_pod_container_status_restarts_total[1h]) > 5`,
 							},
 							Annotations: map[string]string{
-								"description": `Pod {{ "{{ " }} $labels.pod {{ " }}" }} in namespace {{ "{{ " }} $labels.namespace {{ " }}" }} is restarting a lot`,
-								"summary":     `Pod restarting a lot`,
+								description: `Pod {{ "{{ " }} $labels.pod {{ " }}" }} in namespace {{ "{{ " }} $labels.namespace {{ " }}" }} is restarting a lot`,
+								summary:     `Pod restarting a lot`,
 							},
 						},
 					},
@@ -71,57 +200,7 @@ func init() {
 			},
 		},
 	}
-	/*
-
-		DefaultPromethuesRules["node-memory-usage"] = &promv1.PrometheusRule{
-			Spec: promv1.PrometheusRuleSpec{
-				Groups: []promv1.RuleGroup{
-					{
-						Name: "NodeMemoryUsage",
-						Rules: []promv1.Rule{
-							{
-								Alert: "NodeMemoryUsage",
-								Expr: intstr.IntOrString{
-									Type:   intstr.String,
-									StrVal: `((node_memory_MemTotal_bytes - (node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes))/ node_memory_MemTotal_bytes) * 100 > {{ .Values.prometheus.alerts.nodeMemoryUsage.nodeMemoryUsageThreshold }}`,
-								},
-								For: "5m",
-								Annotations: map[string]string{
-									"description": `{{ "{{ " }} $labels.instance {{ " }}" }}: Memory usage is above the {{ .Values.prometheus.alerts.nodeMemoryUsage.nodeMemoryUsageThreshold }}% threshold.  The current value is: {{ "{{ " }} $value {{ " }}" }}.`,
-									"summary":     `{{ "{{ " }}$labels.instance{{ " }}" }}: High memory usage detected`,
-								},
-							},
-						},
-					},
-				},
-			},
-		}
-
-		DefaultPromethuesRules["high-cpu-usage"] = &promv1.PrometheusRule{
-			Spec: promv1.PrometheusRuleSpec{
-				Groups: []promv1.RuleGroup{
-					{
-						Name: "HighCPUUsage",
-						Rules: []promv1.Rule{
-							{
-								Alert: "HighCPUUsage",
-								Expr: intstr.IntOrString{
-									Type:   intstr.String,
-									StrVal: `(100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > {{ .Values.prometheus.alerts.highCPUUsage.highCPUUsageThreshold }}`,
-								},
-								For: "5m",
-								Annotations: map[string]string{
-									"description": `{{ "{{ " }} $labels.instance {{ " }}" }}: CPU usage is above the {{ .Values.prometheus.alerts.highCPUUsage.highCPUUsageThreshold }}% threshold.  The current value is: {{ "{{ " }} $value {{ " }}" }}.`,
-									"summary":     "High CPU Usage",
-								},
-							},
-						},
-					},
-				},
-			},
-		}*/
-
-	DefaultPromethuesRules["failed-jobs"] = &promv1.PrometheusRule{
+	defaultPromethuesRules[FailedJob] = &promv1.PrometheusRule{
 		Spec: promv1.PrometheusRuleSpec{
 			Groups: []promv1.RuleGroup{
 				{
@@ -134,8 +213,8 @@ func init() {
 								StrVal: "kube_job_failed != 0",
 							},
 							Annotations: map[string]string{
-								"description": `Job {{ "{{ " }} $labels.exported_job {{ " }}" }} in namespace {{ "{{ " }} $labels.namespace {{ " }}" }} failed for some reason.`,
-								"summary":     "Failed job",
+								description: `Job {{ "{{ " }} $labels.exported_job {{ " }}" }} in namespace {{ "{{ " }} $labels.namespace {{ " }}" }} failed for some reason.`,
+								summary:     "Failed job",
 							},
 						},
 					},

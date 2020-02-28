@@ -99,31 +99,42 @@ func (r *Reconsiler) syncPrometheus() error {
 
 	}
 	log.Info("prometheus ingress object is sync")
-	for name, rule := range model.DefaultPromethuesRules {
+	//prometheus rules
+	rules, err := model.DefaultPrometheusRules(r.CR)
+	if err != nil {
+		log.Error(err, "Failed to create prometheus rule objects")
+		return err
+	}
+	for name, rule := range rules {
 		remoteRule := &promv1.PrometheusRule{}
-		k := client.ObjectKey{Name: name, Namespace: r.CR.Namespace}
+		k := client.ObjectKey{Name: string(name), Namespace: r.CR.Namespace}
 		if err := r.Client.Get(r.Context, k, remoteRule); err != nil {
 			if errors.IsNotFound(err) {
 				remoteRule = rule.DeepCopy()
 				remoteRule.ObjectMeta = metav1.ObjectMeta{
-					Name:      name,
+					Name:      string(name),
 					Namespace: r.CR.Namespace,
 					Labels:    model.PrometheusLabels(r.CR),
 				}
 				if err = r.createObject(remoteRule); err != nil {
-					log.Error(err, "Failed to create PrometheusRule: "+name)
+					log.Error(err, "Failed to create PrometheusRule: "+string(name))
 					return err
-
 				}
 
 			} else {
-				log.Error(err, "Failed to get PrometheusRule: "+name)
+				log.Error(err, "Failed to get PrometheusRule: "+string(name))
 				return err
-
+			}
+		} else {
+			updatedRule := remoteRule.DeepCopy()
+			updatedRule.Labels = model.PrometheusLabels(r.CR)
+			updatedRule.Spec = rule.Spec
+			if err := r.updateObject(updatedRule); err != nil {
+				log.Error(err, "Failed to update prometheus rule: "+string(name))
+				return err
 			}
 
 		}
-
 	}
 	log.Info("default prometheus rules are created")
 	return nil

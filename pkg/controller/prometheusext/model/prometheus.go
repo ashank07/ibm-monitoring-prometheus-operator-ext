@@ -283,6 +283,10 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 		spec.ServiceAccountName = cr.Spec.PrometheusConfig.ServiceAccountName
 	}
 
+	if cr.Spec.PrometheusConfig.LogLevel != "" {
+		spec.LogLevel = cr.Spec.PrometheusConfig.LogLevel
+	}
+
 	return spec, nil
 }
 

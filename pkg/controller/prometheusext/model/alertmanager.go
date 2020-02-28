@@ -124,6 +124,9 @@ func NewAlertmanager(cr *promext.PrometheusExt) (*promv1.Alertmanager, error) {
 	if cr.Spec.AlertManagerConfig.ServiceAccountName != "" {
 		am.Spec.ServiceAccountName = cr.Spec.AlertManagerConfig.ServiceAccountName
 	}
+	if cr.Spec.AlertManagerConfig.LogLevel != "" {
+		am.Spec.LogLevel = cr.Spec.AlertManagerConfig.LogLevel
+	}
 
 	return am, nil
 }

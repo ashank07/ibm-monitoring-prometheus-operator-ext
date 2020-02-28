@@ -40,6 +40,8 @@ spec:
                   type: string
                 imageTag:
                   type: string
+                logLevel:
+                  type: string
                 pvSize:
                   type: string
                 resource:
@@ -69,6 +71,7 @@ spec:
               required:
               - imageRepo
               - imageTag
+              - logLevel
               - servicePort
               type: object
             certs:
@@ -177,6 +180,8 @@ spec:
                   type: string
                 imageTag:
                   type: string
+                logLevel:
+                  type: string
                 nodeCPUThreshold:
                   type: integer
                 nodeMemoryThreshold:
@@ -232,6 +237,7 @@ spec:
                   type: integer
               required:
               - imageRepo
+              - logLevel
               - nodeCPUThreshold
               - nodeMemoryThreshold
               - serviceAccount
