@@ -32,7 +32,12 @@ const (
 	//Alertmanager means object is Alertmanager
 	Alertmanager = ObjectType("alertmanager")
 	//Grafana means object is grafana. It is only for certification dnsNames here
-	Grafana        = ObjectType("grafana")
+	Grafana = ObjectType("grafana")
+
+	defaultHelmPort      = int32(3000)
+	defaultClusterDomain = "cluster.local"
+	defaultClusterName   = "mycluster"
+
 	alertConfigStr = `  
   global:
   receivers:
@@ -819,13 +824,98 @@ const (
   end
 
   local function get_releases(token, time)
-      local release_list = {}
-      return release_list, nil
+      local httpc = http.new()
+        local res, err = httpc:request_uri("http://helm-api.{{ .HelmNamespace }}.svc.{{ .ClusterDomain }}:{{.HelmPort}}/api/v2/releases", {
+            method = "GET",
+            headers = {
+              ["Content-Type"] = "application/json",
+              ["Authorization"] = "Bearer ".. token,
+              ["cookie"] = "cfc-access-token-cookie="..token
+            }
+        })
+        if not res then
+            ngx.log(ngx.ERR, "Failed to get helm releases",err)
+            return nil, util.exit_500()
+        end
+        if (res.body == "" or res.body == nil) then
+            ngx.log(ngx.ERR, "Empty response body")
+            return nil, util.exit_500()
+        end
+        local x = tostring(res.body)
+        ngx.log(ngx.DEBUG, "response is ",x)
+        local releases_result = cjson.decode(x).data
+        local release_list = {}
+        for index, release in ipairs(releases_result) do
+            local release_attrs = {}
+            release_attrs.__name__ = "helm_release_info"
+            release_attrs.release_name = release.attributes.name
+            release_attrs.chart_name = release.attributes.chartName
+            release_attrs.chart_version = release.attributes.chartVersion
+            release_attrs.status = release.attributes.status
+            release_attrs.namespace = release.attributes.namespace
+            table.insert(release_list, release_attrs)
+            local release_str = cjson.encode(release_list)
+        end
+        return release_list, nil
   end
 
   local function get_release_pods(token, release_name)
       ngx.log(ngx.DEBUG, "Check pod of release ",release_name)
-      return ""
+        local no_pods_str = "NONE"
+        if release_name == "" then
+            return no_pods_str
+        end
+        local httpc = http.new()
+        local res, err = httpc:request_uri("http://helm-api.{{ .HelmNamespace }}.svc.{{ .ClusterDomain }}:{{.HelmPort}}/api/v2/releases/"..release_name, {
+            method = "GET",
+            headers = {
+              ["Content-Type"] = "application/json",
+              ["Authorization"] = "Bearer ".. token,
+              ["cookie"] = "cfc-access-token-cookie="..token
+            }
+        })
+        if not res then
+            ngx.log(ngx.ERR, "Failed to get pods of release ",err)
+            return no_pods_str
+        end
+        if res.status == 404 then
+            ngx.log(ngx.ERR, "The release does not exist: ", release_name)
+            return no_pods_str
+        end
+        if (res.body == "" or res.body == nil) then
+            ngx.log(ngx.ERR, "Empty response body")
+            return no_pods_str
+        end
+        local x = tostring(res.body)
+        ngx.log(ngx.DEBUG, "response is ",x)
+        local resources_str = cjson.decode(x).data.attributes.resources
+        local s_index = string.find(resources_str, "==> v1/Pod")
+        if s_index == nil then
+            return no_pods_str
+        end
+        local e_index = string.find(resources_str, "==>", s_index + 1)
+        local pod_str
+        if e_index ~= nil then
+            pod_str = string.sub(resources_str, s_index, e_index)
+        else
+            pod_str = string.sub(resources_str, s_index)
+        end
+        local i=1
+        local pods=""
+        for pod_line in string.gmatch(pod_str, "([^\n]+)") do
+            if string.find(pod_line, " ") ~= nil then
+                if i > 2 then
+                    pod_name = string.sub(pod_line, 1, string.find(pod_line, " ") - 1)
+                    if i ~= 3 then
+                        pod_name = "|"..pod_name
+                    end
+                    pods=pods..pod_name
+                end
+            end
+            i = i + 1
+        end
+        ngx.log(ngx.DEBUG, "pods string is ",pods)
+        return pods
   end
 
   local function write_release_response()

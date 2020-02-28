@@ -3,8 +3,6 @@ kind: PrometheusExt
 metadata:
   name: ibm-monitoring
 spec:
-    clusterName: mycluster
-    clusterDomain: cluster.local
     storageClassName: rook-ceph-block-internal
     clusterAddress: "icp-console.apps.dybo-ocp4.os.fyre.ibm.com"
     clusterPort: 8443

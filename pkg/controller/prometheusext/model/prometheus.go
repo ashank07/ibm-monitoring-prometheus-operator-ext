@@ -303,12 +303,19 @@ func scrapeTargetsFileName() string {
 //NewScrapeTargetsSecret return secret for prometheus scrape targets
 func NewScrapeTargetsSecret(cr *promext.PrometheusExt, exporter *exportersv1alpha1.Exporter) (*v1.Secret, error) {
 	var tplBuffer bytes.Buffer
+
+	clusterDomain := defaultClusterDomain
+	if cr.Spec.ClusterDomain != "" {
+		clusterDomain = cr.Spec.ClusterDomain
+
+	}
+
 	paras := scrapeTargetConfigParas{
 		Standalone:       !cr.Spec.MCMMonitor.IsHubCluster,
 		CASecretName:     cr.Spec.CASecret,
 		ClientSecretName: cr.Spec.MonitoringClientSecret,
 		NodeExporter:     exporter != nil && exporter.Spec.NodeExporter.Enable,
-		ClusterDomain:    cr.Spec.ClusterDomain,
+		ClusterDomain:    clusterDomain,
 	}
 	if err := scrapeTargetsTemplate.Execute(&tplBuffer, paras); err != nil {
 		return nil, err
@@ -328,12 +335,17 @@ func NewScrapeTargetsSecret(cr *promext.PrometheusExt, exporter *exportersv1alph
 func UpdatedScrapeTargetsSecret(cr *promext.PrometheusExt, exporter *exportersv1alpha1.Exporter, currentSecret *v1.Secret) (*v1.Secret, error) {
 	secret := currentSecret.DeepCopy()
 	var tplBuffer bytes.Buffer
+	clusterDomain := defaultClusterDomain
+	if cr.Spec.ClusterDomain != "" {
+		clusterDomain = cr.Spec.ClusterDomain
+
+	}
 	paras := scrapeTargetConfigParas{
 		Standalone:       !cr.Spec.MCMMonitor.IsHubCluster,
 		CASecretName:     cr.Spec.CASecret,
 		ClientSecretName: cr.Spec.MonitoringClientSecret,
 		NodeExporter:     exporter != nil && exporter.Spec.NodeExporter.Enable,
-		ClusterDomain:    cr.Spec.ClusterDomain,
+		ClusterDomain:    clusterDomain,
 	}
 	if err := scrapeTargetsTemplate.Execute(&tplBuffer, paras); err != nil {
 		return nil, err

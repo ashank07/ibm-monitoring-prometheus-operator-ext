@@ -127,6 +127,16 @@ spec:
             grafanaSvcPort:
               format: int32
               type: integer
+            helmReleasesMonitor:
+              description: HelmReleasesMonitor defines information for heml releases
+                monitoring
+              properties:
+                namespace:
+                  type: string
+                port:
+                  format: int32
+                  type: integer
+              type: object
             iamProvider:
               description: IAMProvider defines information for iam
               properties:
@@ -147,7 +157,6 @@ spec:
               - idManagementSvcPort
               - idProviderSvc
               - idProviderSvcPort
-              - namespace
               type: object
             imagePolicy:
               description: PullPolicy describes a policy for if/when to pull a container
@@ -247,8 +256,6 @@ spec:
               type: string
           required:
           - clusterAddress
-          - clusterDomain
-          - clusterName
           - clusterPort
           - grafanaSvcName
           - grafanaSvcPort

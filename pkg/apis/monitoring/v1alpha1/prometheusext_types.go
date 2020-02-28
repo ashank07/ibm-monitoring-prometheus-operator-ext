@@ -31,8 +31,8 @@ type PrometheusExtSpec struct {
 	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
 	ClusterAddress     string        `json:"clusterAddress"`
 	ClusterPort        int32         `json:"clusterPort"`
-	ClusterName        string        `json:"clusterName"`
-	ClusterDomain      string        `json:"clusterDomain"`
+	ClusterName        string        `json:"clusterName,omitempty"`
+	ClusterDomain      string        `json:"clusterDomain,omitempty"`
 	ImagePolicy        v1.PullPolicy `json:"imagePolicy,omitempty"`
 	ImagePullSecrets   []string      `json:"imagePullSecrets,omitempty"`
 	AlertManagerConfig `json:"alertManagerConfig,omitempty"`
@@ -43,17 +43,24 @@ type PrometheusExtSpec struct {
 	Certs              `json:"certs,omitempty"`
 	IAMProvider        `json:"iamProvider,omitempty"`
 	//Grafana integrated with this CR
-	GrafanaSvcName string `json:"grafanaSvcName"`
-	GrafanaSvcPort int32  `json:"grafanaSvcPort"`
+	GrafanaSvcName      string `json:"grafanaSvcName"`
+	GrafanaSvcPort      int32  `json:"grafanaSvcPort"`
+	HelmReleasesMonitor `json:"helmReleasesMonitor,omitempty"`
 }
 
 //IAMProvider defines information for iam
 type IAMProvider struct {
-	Namespace           string `json:"namespace"`
+	Namespace           string `json:"namespace,omitempty"`
 	IDProviderSvc       string `json:"idProviderSvc"`
 	IDProviderSvcPort   int32  `json:"idProviderSvcPort"`
 	IDManagementSvc     string `json:"idManagementSvc"`
 	IDManagementSvcPort int32  `json:"idManagementSvcPort"`
+}
+
+//HelmReleasesMonitor defines information for heml releases monitoring
+type HelmReleasesMonitor struct {
+	Namespace string `json:"namespace,omitempty"`
+	Port      int32  `json:"port,omitempty"`
 }
 
 // PrometheusConfig defines configuration of Prometheus object

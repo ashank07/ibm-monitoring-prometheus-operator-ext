@@ -130,19 +130,39 @@ type luaParas struct {
 	Standalone          bool
 	AlertmanagerSvcName string
 	AlertmanagerSvcPort string
+	HelmNamespace       string
+	HelmPort            int32
+	ClusterDomain       string
 }
 
 //NewProLuaCm return configmap for prometheus lua script
 func NewProLuaCm(cr *promext.PrometheusExt) (*v1.ConfigMap, error) {
 
 	var tplBuffer bytes.Buffer
+
+	helmNamespace := cr.Namespace
+	if cr.Spec.HelmReleasesMonitor.Namespace != "" {
+		helmNamespace = cr.Spec.HelmReleasesMonitor.Namespace
+	}
+	helmPort := defaultHelmPort
+	if cr.Spec.HelmReleasesMonitor.Port != 0 {
+		helmPort = cr.Spec.HelmReleasesMonitor.Port
+
+	}
+	clusterDomain := defaultClusterDomain
+	if cr.Spec.ClusterDomain != "" {
+		clusterDomain = cr.Spec.ClusterDomain
+
+	}
 	paras := luaParas{
-		Standalone: !cr.Spec.MCMMonitor.IsHubCluster,
-		Managed:    true,
-		Openshift:  true,
-		//TODO: are them right?
+		Standalone:          !cr.Spec.MCMMonitor.IsHubCluster,
+		Managed:             true,
+		Openshift:           true,
 		AlertmanagerSvcName: AlertmanagerName(cr),
 		AlertmanagerSvcPort: fmt.Sprintf("%d", cr.Spec.AlertManagerConfig.ServicePort),
+		HelmNamespace:       helmNamespace,
+		HelmPort:            helmPort,
+		ClusterDomain:       clusterDomain,
 	}
 	if err := prometheusLuaTemplate.Execute(&tplBuffer, paras); err != nil {
 		return nil, err
@@ -161,14 +181,25 @@ func NewProLuaCm(cr *promext.PrometheusExt) (*v1.ConfigMap, error) {
 //UpdatedProLuaUtilsCm return updated configmap for prometheus lua utils script
 func UpdatedProLuaUtilsCm(cr *promext.PrometheusExt, curr *v1.ConfigMap) (*v1.ConfigMap, error) {
 	var tplBuffer bytes.Buffer
+	iamNS := cr.Namespace
+	if cr.Spec.IAMProvider.Namespace != "" {
+		iamNS = cr.Spec.IAMProvider.Namespace
+	}
+
+	clusterName := defaultClusterName
+	if cr.Spec.ClusterName != "" {
+		clusterName = cr.Spec.ClusterName
+
+	}
+
 	paras := luaUtilsParas{
-		ClusterName:          cr.Spec.ClusterName,
+		ClusterName:          clusterName,
 		Namespace:            cr.Namespace,
 		PrometheusSvcName:    PromethuesName(cr),
 		PrometheusSvcPort:    fmt.Sprintf("%d", cr.Spec.PrometheusConfig.ServicePort),
 		GrafanaSvcName:       cr.Spec.GrafanaSvcName,
 		GrafanaSvcPort:       fmt.Sprintf("%d", cr.Spec.GrafanaSvcPort),
-		IAMNamespace:         cr.Spec.IAMProvider.Namespace,
+		IAMNamespace:         iamNS,
 		IAMProviderSvcName:   cr.Spec.IAMProvider.IDProviderSvc,
 		IAMProviderSvcPort:   fmt.Sprintf("%d", cr.Spec.IAMProvider.IDProviderSvcPort),
 		IAMManagementSvcName: cr.Spec.IAMProvider.IDManagementSvc,
@@ -215,6 +246,10 @@ func NewProLuaUtilsCm(cr *promext.PrometheusExt) (*v1.ConfigMap, error) {
 		clusterName = cr.Spec.ClusterName
 
 	}
+	iamNS := cr.Namespace
+	if cr.Spec.IAMProvider.Namespace != "" {
+		iamNS = cr.Spec.IAMProvider.Namespace
+	}
 	paras := luaUtilsParas{
 		ClusterDomain:        clusterDomain,
 		ClusterName:          clusterName,
@@ -223,7 +258,7 @@ func NewProLuaUtilsCm(cr *promext.PrometheusExt) (*v1.ConfigMap, error) {
 		PrometheusSvcPort:    fmt.Sprintf("%d", cr.Spec.PrometheusConfig.ServicePort),
 		GrafanaSvcName:       cr.Spec.GrafanaSvcName,
 		GrafanaSvcPort:       fmt.Sprintf("%d", cr.Spec.GrafanaSvcPort),
-		IAMNamespace:         cr.Spec.IAMProvider.Namespace,
+		IAMNamespace:         iamNS,
 		IAMProviderSvcName:   cr.Spec.IAMProvider.IDProviderSvc,
 		IAMProviderSvcPort:   fmt.Sprintf("%d", cr.Spec.IAMProvider.IDProviderSvcPort),
 		IAMManagementSvcName: cr.Spec.IAMProvider.IDManagementSvc,
@@ -310,6 +345,10 @@ func NewRouterContainer(cr *promext.PrometheusExt, ot ObjectType) *v1.Container 
 	rofs := false
 	drops := []v1.Capability{"ALL"}
 	adds := []v1.Capability{"CHOWN", "NET_ADMIN", "NET_RAW", "LEASE", "SETGID", "SETUID"}
+	iamNS := cr.Namespace
+	if cr.Spec.IAMProvider.Namespace != "" {
+		iamNS = cr.Spec.IAMProvider.Namespace
+	}
 	container := &v1.Container{
 		Name:            "router",
 		Image:           cr.Spec.RouterImage,
@@ -332,10 +371,16 @@ func NewRouterContainer(cr *promext.PrometheusExt, ot ObjectType) *v1.Container 
 	}
 	//probes are ready for prometheus only
 	if ot == Prometheus {
+		clusterDomain := defaultClusterDomain
+		if cr.Spec.ClusterDomain != "" {
+			clusterDomain = cr.Spec.ClusterDomain
+
+		}
+
 		command := fmt.Sprintf("wget --spider --no-check-certificate -S 'https://%s.%s.svc.%s:%d/v1/info'",
 			cr.Spec.IAMProvider.IDProviderSvc,
-			cr.Spec.IAMProvider.Namespace,
-			cr.Spec.ClusterDomain,
+			iamNS,
+			clusterDomain,
 			cr.Spec.IAMProvider.IDProviderSvcPort)
 		rprobe := &v1.Probe{
 			Handler: v1.Handler{
