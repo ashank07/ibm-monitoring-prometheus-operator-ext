@@ -71,7 +71,6 @@ spec:
               required:
               - imageRepo
               - imageTag
-              - logLevel
               - servicePort
               type: object
             certs:
@@ -237,7 +236,6 @@ spec:
                   type: integer
               required:
               - imageRepo
-              - logLevel
               - nodeCPUThreshold
               - nodeMemoryThreshold
               - serviceAccount

@@ -32,7 +32,6 @@ import (
 	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller"
 	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/version"
 
-	exportersapis "github.com/IBM/ibm-monitoring-exporters-operator/pkg/apis"
 	promev1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
 	certmgr "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1alpha1"
 	"github.com/operator-framework/operator-sdk/pkg/k8sutil"
@@ -48,6 +47,8 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
+
+	exportersapis "github.com/IBM/ibm-monitoring-exporters-operator/pkg/apis"
 )
 
 // Change below variables to serve metrics on different host or port.

@@ -17,8 +17,9 @@
 package reconsiler
 
 import (
-	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
+
+	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 )
 
 func (r *Reconsiler) syncSecrets() error {

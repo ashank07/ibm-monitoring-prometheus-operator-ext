@@ -20,9 +20,10 @@ import (
 	"bytes"
 	"html/template"
 
-	promext "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
 	promv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+
+	promext "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
 )
 
 //defaultPromethuesRules is a dictionary to stor default prometheus rules information

@@ -17,8 +17,9 @@
 package model
 
 import (
-	monitoringv1alpha1 "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
 	promev1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
+
+	monitoringv1alpha1 "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
 )
 
 //ObjectType means if it is prometheus or alertmanager

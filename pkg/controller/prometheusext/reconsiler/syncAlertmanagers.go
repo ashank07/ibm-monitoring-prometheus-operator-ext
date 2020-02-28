@@ -19,8 +19,9 @@ package reconsiler
 import (
 	"k8s.io/apimachinery/pkg/api/errors"
 
-	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 )
 
 func (r *Reconsiler) syncAlertmanager() error {

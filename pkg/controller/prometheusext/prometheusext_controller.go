@@ -19,9 +19,6 @@ package prometheusext
 import (
 	"context"
 
-	exportersv1alpha1 "github.com/IBM/ibm-monitoring-exporters-operator/pkg/apis/monitoring/v1alpha1"
-	monitoringv1alpha1 "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
-	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/reconsiler"
 	promev1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -33,6 +30,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
+
+	exportersv1alpha1 "github.com/IBM/ibm-monitoring-exporters-operator/pkg/apis/monitoring/v1alpha1"
+	monitoringv1alpha1 "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
+	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/reconsiler"
 )
 
 var log = logf.Log.WithName("controller_prometheusext")
