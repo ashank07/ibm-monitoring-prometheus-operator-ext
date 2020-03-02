@@ -21,6 +21,9 @@ const (
 	AppLabelKey = "cs/app"
 	//AppLabekValue is value of label
 	AppLabekValue = "ibm-monitoring"
+
+	//Component is string "component"
+	Component = "component"
 	//LoopBackIP loopback ip
 	LoopBackIP = "127.0.0.1"
 	//ExternalPort external port for alertmanager and prometheus

@@ -65,7 +65,7 @@ type HelmReleasesMonitor struct {
 
 // PrometheusConfig defines configuration of Prometheus object
 type PrometheusConfig struct {
-	ServiceAccountName  string                  `json:"serviceAccount"`
+	ServiceAccountName  string                  `json:"serviceAccount,omitempty"`
 	ImageRepo           string                  `json:"imageRepo"`
 	ImageTag            string                  `json:"imageTag,omitempty"`
 	Retention           string                  `json:"retention,omitempty"`
@@ -117,7 +117,9 @@ type MCMMonitor struct {
 	// Image for mcm monitoring controller
 	Image string `json:"image,omitempty"`
 	// MCM helper image for some initiallizing work
-	HelperImage string `json:"helpeImage,omitempty"`
+	HelperImage        string                  `json:"helpeImage,omitempty"`
+	ServiceAccountName string                  `json:"serviceAccount,omitempty"`
+	Resources          v1.ResourceRequirements `json:"resource,omitempty"`
 }
 
 // PrometheusExtStatus defines the observed state of PrometheusExt

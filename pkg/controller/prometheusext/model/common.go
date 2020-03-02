@@ -61,7 +61,7 @@ func managedLabelValue(cr *monitoringv1alpha1.PrometheusExt) string {
 
 //MCMCtlDeploymentName gets mcm monitoring controller deployment name
 func MCMCtlDeploymentName(cr *monitoringv1alpha1.PrometheusExt) string {
-	return cr.Name + "-" + "-mcm-ctl"
+	return cr.Name + "-mcm-ctl"
 }
 
 //IReqeueError defines interface for requeueError

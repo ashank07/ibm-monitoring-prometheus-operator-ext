@@ -174,7 +174,7 @@ func UpdatedPrometheusIngress(cr *promext.PrometheusExt, currentIngress *ev1beta
 func PrometheusLabels(cr *promext.PrometheusExt) map[string]string {
 	labels := make(map[string]string)
 	labels[AppLabelKey] = AppLabekValue
-	labels["component"] = "prometheus"
+	labels[Component] = "prometheus"
 	labels[managedLabelKey()] = managedLabelValue(cr)
 	for key, v := range cr.Labels {
 		labels[key] = v

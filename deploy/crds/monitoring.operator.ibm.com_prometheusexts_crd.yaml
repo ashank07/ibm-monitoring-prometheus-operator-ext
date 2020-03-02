@@ -178,6 +178,27 @@ spec:
                 isHubCluster:
                   description: If it is running on MCM Hub cluster or not
                   type: boolean
+                resource:
+                  description: ResourceRequirements describes the compute resource
+                    requirements.
+                  properties:
+                    limits:
+                      additionalProperties:
+                        type: string
+                      description: 'Limits describes the maximum amount of compute
+                        resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                    requests:
+                      additionalProperties:
+                        type: string
+                      description: 'Requests describes the minimum amount of compute
+                        resources required. If Requests is omitted for a container,
+                        it defaults to Limits if that is explicitly specified, otherwise
+                        to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                  type: object
+                serviceAccount:
+                  type: string
               type: object
             prometheusConfig:
               description: PrometheusConfig defines configuration of Prometheus object
@@ -247,7 +268,6 @@ spec:
               - imageRepo
               - nodeCPUThreshold
               - nodeMemoryThreshold
-              - serviceAccount
               - servicePort
               type: object
             routerImage:

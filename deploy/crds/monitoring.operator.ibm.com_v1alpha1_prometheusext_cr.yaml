@@ -26,6 +26,12 @@ spec:
       imageTag: v0.15.0-build.1
       servicePort: 9093
       logLevel: debug
+    mcmMonitor:
+      isHubCluster: false
+      image: hyc-cloud-private-release-docker-local.artifactory.swg-devops.com/ibmcom-amd64/dashboard-controller:v1.2.0
+      helpeImage: hyc-cloud-private-release-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-initcontainer:1.0.0
+      serviceAccount: default
+
     certs:
       caSecret: cluster-ca-cert
       provider: certmanager

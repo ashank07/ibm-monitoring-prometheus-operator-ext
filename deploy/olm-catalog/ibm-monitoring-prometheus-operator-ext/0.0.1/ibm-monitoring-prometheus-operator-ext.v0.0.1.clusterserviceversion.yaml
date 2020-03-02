@@ -26,8 +26,6 @@ metadata:
               "provider": "certmanager"
             },
             "clusterAddress": "icp-console.apps.dybo-ocp4.os.fyre.ibm.com",
-            "clusterDomain": "cluster.local",
-            "clusterName": "mycluster",
             "clusterPort": 8443,
             "grafanaSvcName": "ibm-monitoring-grafana",
             "grafanaSvcPort": 8090,
@@ -41,6 +39,12 @@ metadata:
             "imagePullSecrets": [
               "infra-registry-key"
             ],
+            "mcmMonitor": {
+              "helpeImage": "hyc-cloud-private-release-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-initcontainer:1.0.0",
+              "image": "hyc-cloud-private-release-docker-local.artifactory.swg-devops.com/ibmcom-amd64/dashboard-controller:v1.2.0",
+              "isHubCluster": false,
+              "serviceAccount": "default"
+            },
             "prometheusConfig": {
               "imageRepo": "hyc-cloud-private-release-docker-local.artifactory.swg-devops.com/ibmcom-amd64/prometheus",
               "imageTag": "v2.8.0-build.1",
