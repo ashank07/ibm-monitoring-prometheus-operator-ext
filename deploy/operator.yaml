@@ -17,7 +17,7 @@ spec:
         - name: ibm-monitoring-prometheus-operator-ext
           image: quay.io/opencloudio/ibm-monitoring-prometheusext-operator
           command:
-          - ibm-monitoring-prometheus-operator-ext
+          - ibm-monitoring-prometheusext-operator
           imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE

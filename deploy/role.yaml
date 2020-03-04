@@ -131,9 +131,9 @@ rules:
   resources:
   - clusterstatuses
   verbs:
-  - 'get
+  - get
   - list
-  - watch'
+  - watch
 - apiGroups:
   - security.openshift.io
   resourceNames:

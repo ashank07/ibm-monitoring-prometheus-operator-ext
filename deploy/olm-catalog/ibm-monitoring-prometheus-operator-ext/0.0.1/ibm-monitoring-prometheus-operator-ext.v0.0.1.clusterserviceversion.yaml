@@ -71,26 +71,12 @@ spec:
       kind: PrometheusExt
       name: prometheusexts.monitoring.operator.ibm.com
       version: v1alpha1
-    - description: A Prometheus Rule configures groups of sequentially evaluated recording and alerting rules.
-      displayName: Prometheus Rule
-      kind: PrometheusRule
-      name: prometheusrules.monitoring.coreos.com
-      version: v1
-    - description: Configures prometheus to monitor a particular k8s service
-      displayName: Service Monitor
-      kind: ServiceMonitor
-      name: servicemonitors.monitoring.coreos.com
-      version: v1
+      displayName: Prometheus Operator Extension
     required:
     - description: A running Prometheus instance
       displayName: Prometheus
       kind: Prometheus
       name: prometheuses.monitoring.coreos.com
-      version: v1
-    - description: Configures an Alertmanager for the namespace
-      displayName: Alertmanager
-      kind: Alertmanager
-      name: alertmanagers.monitoring.coreos.com
       version: v1
   description: Operator deploys Prometheus and Alertmanager instances with RBAC enabled. It will also enable Multicloud monitoring
   displayName: IBM Monitoring Prometheus Operator Extension
@@ -163,7 +149,9 @@ spec:
           resources:
           - clusterstatuses
           verbs:
-          - get - list - watch
+          - get 
+          - list
+          - watch
         - apiGroups:
           - security.openshift.io
           resourceNames:
@@ -173,6 +161,84 @@ spec:
           verbs:
           - use
         serviceAccountName: ibm-monitoring-mcm-ctl
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - services
+          - events
+          - configmaps
+          - secrets
+          - pods
+          - services/finalizers
+          verbs:
+          - '*'
+        - nonResourceURLs:
+          - /metrics
+          verbs:
+          - get
+        - apiGroups:
+          - apiextensions.k8s.io
+          resources:
+          - customresourcedefinitions
+          verbs:
+          - '*'
+        - apiGroups:
+          - ""
+          resources:
+          - events
+          - namespaces
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - apps
+          resources:
+          - statefulsets
+          verbs:
+          - '*'
+        - apiGroups:
+          - batch
+          resources:
+          - jobs
+          verbs:
+          - '*'
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - prometheuses
+          - alertmanagers
+          - servicemonitors
+          - prometheusrules
+          - podmonitors
+          - prometheuses/finalizers
+          - alertmanagers/finalizers
+          verbs:
+          - '*'
+        - apiGroups:
+          - monitoringcontroller.cloud.ibm.com
+          resources:
+          - monitoringdashboards
+          verbs:
+          - '*'
+        - apiGroups:
+          - mcm.ibm.com
+          resources:
+          - clusterstatuses
+          verbs:
+          - get 
+          - list
+          - watch
+        - apiGroups:
+          - security.openshift.io
+          resourceNames:
+          - privileged
+          resources:
+          - securitycontextconstraints
+          verbs:
+          - use
+        serviceAccountName: default
       - rules:
         - apiGroups:
           - ""
@@ -215,7 +281,7 @@ spec:
             spec:
               containers:
               - command:
-                - ibm-monitoring-prometheus-operator-ext
+                - ibm-monitoring-prometheusext-operator
                 env:
                 - name: WATCH_NAMESPACE
                   valueFrom:

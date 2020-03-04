@@ -54,15 +54,15 @@ LABEL org.label-schema.vendor="$IMAGE_VENDOR" \
       io.k8s.description="$IMAGE_DESCRIPTION" \
       io.openshift.tags="$IMAGE_OPENSHIFT_TAGS"
 
-ENV OPERATOR=/usr/local/bin/ibm-monitoring-exporters-operator \
+ENV OPERATOR=/usr/local/bin/ibm-monitoring-prometheusext-operator \
   DEPLOY_DIR=/deploy \
   USER_UID=1001 \
-  USER_NAME=ibm-monitoring-exporters-operator
+  USER_NAME=ibm-monitoring-prometheusext-operator
 
 COPY --from=builder /qemu-s390x-static /usr/bin/
 
 # install operator binary
-COPY build/_output/bin/ibm-monitoring-exporters-operator-s390x ${OPERATOR}
+COPY build/_output/bin/ibm-monitoring-prometheusext-operator-s390x ${OPERATOR}
 COPY deploy/crds ${DEPLOY_DIR}
 
 COPY build/bin /usr/local/bin
