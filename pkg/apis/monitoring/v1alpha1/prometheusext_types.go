@@ -35,13 +35,13 @@ type PrometheusExtSpec struct {
 	ClusterDomain      string        `json:"clusterDomain,omitempty"`
 	ImagePolicy        v1.PullPolicy `json:"imagePolicy,omitempty"`
 	ImagePullSecrets   []string      `json:"imagePullSecrets,omitempty"`
-	AlertManagerConfig `json:"alertManagerConfig,omitempty"`
-	PrometheusConfig   `json:"prometheusConfig,omitempty"`
-	RouterImage        string `json:"routerImage,omitempty"`
+	AlertManagerConfig `json:"alertManagerConfig"`
+	PrometheusConfig   `json:"prometheusConfig"`
+	RouterImage        string `json:"routerImage"`
 	StorageClassName   string `json:"storageClassName"`
 	MCMMonitor         `json:"mcmMonitor,omitempty"`
-	Certs              `json:"certs,omitempty"`
-	IAMProvider        `json:"iamProvider,omitempty"`
+	Certs              `json:"certs"`
+	IAMProvider        `json:"iamProvider"`
 	//Grafana integrated with this CR
 	GrafanaSvcName      string `json:"grafanaSvcName"`
 	GrafanaSvcPort      int32  `json:"grafanaSvcPort"`
@@ -67,7 +67,7 @@ type HelmReleasesMonitor struct {
 type PrometheusConfig struct {
 	ServiceAccountName  string                  `json:"serviceAccount,omitempty"`
 	ImageRepo           string                  `json:"imageRepo"`
-	ImageTag            string                  `json:"imageTag,omitempty"`
+	ImageTag            string                  `json:"imageTag"`
 	Retention           string                  `json:"retention,omitempty"`
 	ScrapeInterval      string                  `json:"scrapeInterval,omitempty"`
 	EvaluationInterval  string                  `json:"evaluationInterval,omitempty"`

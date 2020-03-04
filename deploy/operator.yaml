@@ -15,8 +15,7 @@ spec:
       serviceAccountName: ibm-monitoring-prometheus-operator-ext
       containers:
         - name: ibm-monitoring-prometheus-operator-ext
-          # Replace this with the built image name
-          image: REPLACE_IMAGE
+          image: quay.io/opencloudio/ibm-monitoring-prometheusext-operator
           command:
           - ibm-monitoring-prometheus-operator-ext
           imagePullPolicy: Always
@@ -30,4 +29,4 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
-              value: "ibm-monitoring-prometheus-operator-ext"
+              value: "ibm-monitoring-prometheusext-operator"

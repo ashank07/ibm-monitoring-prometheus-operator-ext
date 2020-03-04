@@ -266,6 +266,7 @@ spec:
                   type: integer
               required:
               - imageRepo
+              - imageTag
               - nodeCPUThreshold
               - nodeMemoryThreshold
               - servicePort
@@ -275,10 +276,15 @@ spec:
             storageClassName:
               type: string
           required:
+          - alertManagerConfig
+          - certs
           - clusterAddress
           - clusterPort
           - grafanaSvcName
           - grafanaSvcPort
+          - iamProvider
+          - prometheusConfig
+          - routerImage
           - storageClassName
           type: object
         status:
