@@ -85,7 +85,7 @@ func NewAlertmanager(cr *promext.PrometheusExt) (*promv1.Alertmanager, error) {
 			Version:     cr.Spec.AlertManagerConfig.ImageTag,
 			Replicas:    &replicas,
 			Resources:   cr.Spec.AlertManagerConfig.Resources,
-			Secrets:     []string{cr.Spec.Certs.MonitoringSecret, cr.Spec.Certs.MonitoringClientSecret, cr.Spec.CASecret},
+			Secrets:     []string{cr.Spec.Certs.MonitoringSecret, cr.Spec.Certs.MonitoringClientSecret},
 			ConfigMaps:  []string{RouterEntryCmName(cr), AlertRouterNgCmName(cr)},
 			RoutePrefix: "/alertmanager",
 			Containers:  []v1.Container{*NewRouterContainer(cr, Alertmanager)},
@@ -150,7 +150,7 @@ func UpdatedAlertmanager(cr *promext.PrometheusExt, curr *promv1.Alertmanager) (
 	am.Spec.BaseImage = cr.Spec.AlertManagerConfig.ImageRepo
 	am.Spec.Version = cr.Spec.AlertManagerConfig.ImageTag
 	am.Spec.Resources = cr.Spec.AlertManagerConfig.Resources
-	am.Spec.Secrets = []string{cr.Spec.Certs.MonitoringSecret, cr.Spec.Certs.MonitoringClientSecret, cr.Spec.CASecret}
+	am.Spec.Secrets = []string{cr.Spec.Certs.MonitoringSecret, cr.Spec.Certs.MonitoringClientSecret}
 	am.Spec.ConfigMaps = []string{RouterEntryCmName(cr), AlertRouterNgCmName(cr)}
 	am.Spec.Containers = []v1.Container{*NewRouterContainer(cr, Alertmanager)}
 	am.Spec.Storage = &promv1.StorageSpec{

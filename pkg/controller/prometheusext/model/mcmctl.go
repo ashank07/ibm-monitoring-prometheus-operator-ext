@@ -81,7 +81,7 @@ func mcmDeploymentSpec(cr *promext.PrometheusExt) (*appsv1.DeploymentSpec, error
 						Name: "monitoring-ca-certs",
 						VolumeSource: v1.VolumeSource{
 							Secret: &v1.SecretVolumeSource{
-								SecretName: cr.Spec.Certs.CASecret,
+								SecretName: cr.Spec.Certs.MonitoringSecret,
 							},
 						},
 					},
@@ -135,7 +135,7 @@ func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 		return nil, err
 	}
 	secrets := map[string]string{
-		"/opt/ibm/router/caCerts": cr.Spec.CASecret,
+		"/opt/ibm/router/caCerts": cr.Spec.MonitoringSecret,
 		"/opt/ibm/router/certs":   cr.Spec.Certs.MonitoringSecret,
 		"":                        cr.Spec.MonitoringClientSecret,
 	}

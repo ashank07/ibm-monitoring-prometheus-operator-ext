@@ -3,7 +3,7 @@ module github.com/IBM/ibm-monitoring-prometheus-operator-ext
 go 1.13
 
 require (
-	github.com/IBM/ibm-monitoring-exporters-operator v0.0.0-20200227110106-1b6c553924ed
+	github.com/IBM/ibm-monitoring-exporters-operator v0.0.0-20200303111225-1dbc9cea31f6
 	github.com/coreos/prometheus-operator v0.34.1
 	github.com/jetstack/cert-manager v0.13.0
 	github.com/operator-framework/operator-sdk v0.15.1

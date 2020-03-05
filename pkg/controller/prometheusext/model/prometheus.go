@@ -204,7 +204,7 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 		EnableAdminAPI:         true,
 		Resources:              cr.Spec.PrometheusConfig.Resources,
 		RoutePrefix:            "/prometheus",
-		Secrets:                []string{cr.Spec.CASecret, cr.Spec.Certs.MonitoringSecret, cr.Spec.Certs.MonitoringClientSecret},
+		Secrets:                []string{cr.Spec.Certs.MonitoringSecret, cr.Spec.Certs.MonitoringClientSecret},
 		ConfigMaps:             []string{ProRouterNgCmName(cr), RouterEntryCmName(cr), ProLuaCmName(cr), ProLuaUtilsCmName(cr)},
 		ServiceMonitorSelector: &metav1.LabelSelector{MatchLabels: map[string]string{AppLabelKey: AppLabekValue}},
 		AdditionalScrapeConfigs: &v1.SecretKeySelector{
@@ -312,7 +312,7 @@ func NewScrapeTargetsSecret(cr *promext.PrometheusExt, exporter *exportersv1alph
 
 	paras := scrapeTargetConfigParas{
 		Standalone:       !cr.Spec.MCMMonitor.IsHubCluster,
-		CASecretName:     cr.Spec.CASecret,
+		CASecretName:     cr.Spec.MonitoringSecret,
 		ClientSecretName: cr.Spec.MonitoringClientSecret,
 		NodeExporter:     exporter != nil && exporter.Spec.NodeExporter.Enable,
 		ClusterDomain:    clusterDomain,
@@ -342,7 +342,7 @@ func UpdatedScrapeTargetsSecret(cr *promext.PrometheusExt, exporter *exportersv1
 	}
 	paras := scrapeTargetConfigParas{
 		Standalone:       !cr.Spec.MCMMonitor.IsHubCluster,
-		CASecretName:     cr.Spec.CASecret,
+		CASecretName:     cr.Spec.MonitoringSecret,
 		ClientSecretName: cr.Spec.MonitoringClientSecret,
 		NodeExporter:     exporter != nil && exporter.Spec.NodeExporter.Enable,
 		ClusterDomain:    clusterDomain,

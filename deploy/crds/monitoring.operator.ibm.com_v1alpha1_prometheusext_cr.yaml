@@ -32,11 +32,9 @@ spec:
       helpeImage: hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-initcontainer:1.0.0-build.2
       serviceAccount: ibm-monitoring-mcm-ctl
     certs:
-      caSecret: cluster-ca-cert
-      provider: certmanager
       monitoringSecret: ibm-monitoring-certs
       monitoringClientSecret: ibm-monitoring-client-certs
-      issuer: icp-ca-issuer 
+      issuer: cs-ca-issuer 
     iamProvider:
       namespace: kube-system
       idProviderSvc: platform-identity-provider

@@ -182,16 +182,8 @@ func (r *Reconsiler) readMCMCtlDeployment() error {
 }
 func (r *Reconsiler) readSecrets() error {
 	secret := &v1.Secret{}
-	//ca secret
-	key := client.ObjectKey{Name: r.CR.Spec.CASecret, Namespace: r.CR.Namespace}
-	if err := r.Client.Get(r.Context, key, secret); err != nil {
-		log.Error(err, "CA secret does not exist")
-		return err
-	}
-	r.CurrentState.CASecret = secret.DeepCopy()
-
 	//monitoring cert secret
-	key = client.ObjectKey{Name: r.CR.Spec.MonitoringSecret, Namespace: r.CR.Namespace}
+	key := client.ObjectKey{Name: r.CR.Spec.MonitoringSecret, Namespace: r.CR.Namespace}
 	if err := r.Client.Get(r.Context, key, secret); err != nil {
 		if !errors.IsNotFound(err) {
 			log.Error(err, "failed to get monitoring secet "+r.CR.Spec.MonitoringSecret)

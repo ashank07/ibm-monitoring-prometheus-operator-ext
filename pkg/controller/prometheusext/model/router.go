@@ -345,10 +345,12 @@ func NewRouterContainer(cr *promext.PrometheusExt, ot ObjectType) *v1.Container 
 	rofs := false
 	drops := []v1.Capability{"ALL"}
 	adds := []v1.Capability{"CHOWN", "NET_ADMIN", "NET_RAW", "LEASE", "SETGID", "SETUID"}
-	iamNS := cr.Namespace
-	if cr.Spec.IAMProvider.Namespace != "" {
-		iamNS = cr.Spec.IAMProvider.Namespace
-	}
+	/*
+		iamNS := cr.Namespace
+		if cr.Spec.IAMProvider.Namespace != "" {
+			iamNS = cr.Spec.IAMProvider.Namespace
+		}
+	*/
 	container := &v1.Container{
 		Name:            "router",
 		Image:           cr.Spec.RouterImage,
@@ -370,35 +372,37 @@ func NewRouterContainer(cr *promext.PrometheusExt, ot ObjectType) *v1.Container 
 		Command: []string{"/bin/sh", "-c", "cp /opt/ibm/router/entry/entrypoint.sh /opt/ibm/router/; chmod 744 /opt/ibm/router/entrypoint.sh;exec /opt/ibm/router/entrypoint.sh"},
 	}
 	//probes are ready for prometheus only
-	if ot == Prometheus {
-		clusterDomain := defaultClusterDomain
-		if cr.Spec.ClusterDomain != "" {
-			clusterDomain = cr.Spec.ClusterDomain
+	/*
+		if ot == Prometheus {
+			clusterDomain := defaultClusterDomain
+			if cr.Spec.ClusterDomain != "" {
+				clusterDomain = cr.Spec.ClusterDomain
 
-		}
+			}
 
-		command := fmt.Sprintf("wget --spider --no-check-certificate -S 'https://%s.%s.svc.%s:%d/v1/info'",
-			cr.Spec.IAMProvider.IDProviderSvc,
-			iamNS,
-			clusterDomain,
-			cr.Spec.IAMProvider.IDProviderSvcPort)
-		rprobe := &v1.Probe{
-			Handler: v1.Handler{
-				Exec: &v1.ExecAction{
-					Command: []string{"sh", "-c", command},
+			command := fmt.Sprintf("wget --spider --no-check-certificate -S 'https://%s.%s.svc.%s:%d/v1/info'",
+				cr.Spec.IAMProvider.IDProviderSvc,
+				iamNS,
+				clusterDomain,
+				cr.Spec.IAMProvider.IDProviderSvcPort)
+			rprobe := &v1.Probe{
+				Handler: v1.Handler{
+					Exec: &v1.ExecAction{
+						Command: []string{"sh", "-c", command},
+					},
 				},
-			},
-			InitialDelaySeconds: 30,
-			PeriodSeconds:       10,
+				InitialDelaySeconds: 30,
+				PeriodSeconds:       10,
+			}
+			lprobe := rprobe.DeepCopy()
+			lprobe.PeriodSeconds = 20
+			container.ReadinessProbe = rprobe
+			container.LivenessProbe = lprobe
 		}
-		lprobe := rprobe.DeepCopy()
-		lprobe.PeriodSeconds = 20
-		container.ReadinessProbe = rprobe
-		container.LivenessProbe = lprobe
-	}
+	*/
 	container.VolumeMounts = []v1.VolumeMount{
 		{
-			Name:      "secret-" + cr.Spec.CASecret,
+			Name:      "secret-" + cr.Spec.Certs.MonitoringSecret,
 			MountPath: "/opt/ibm/router/caCerts",
 		},
 		{

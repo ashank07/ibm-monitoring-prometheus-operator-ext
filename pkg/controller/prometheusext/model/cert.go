@@ -36,7 +36,7 @@ func NewCertitication(name string, cr *proext.PrometheusExt, dnsNames []string) 
 			SecretName: name,
 			IssuerRef: cert.ObjectReference{
 				Name: cr.Spec.Certs.Issuer,
-				Kind: cert.IssuerKind,
+				Kind: cert.ClusterIssuerKind,
 			},
 			CommonName: AppLabekValue,
 			DNSNames:   dnsNames,

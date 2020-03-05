@@ -57,7 +57,6 @@ type ClusterState struct {
 	AlertmanagerSvc               *v1.Service
 	AlertManagerIngress           *ev1beta1.Ingress
 	Exporter                      *exportersv1alpha1.Exporter
-	CASecret                      *v1.Secret
 	MonitoringSecret              *v1.Secret
 	MonitoringClientSecret        *v1.Secret
 	PrometheusScrapeTargetsSecret *v1.Secret

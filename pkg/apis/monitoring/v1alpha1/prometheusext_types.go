@@ -93,20 +93,11 @@ type AlertManagerConfig struct {
 
 // Certs defines certification used by monitoring stack
 type Certs struct {
-	// All certificates for monitoring stack should be signed by this CA
-	CASecret string `json:"caSecret"`
-	// Specify how secrets are generated. It can be empty, certmanager or ocp
-	// certmanager does not work before go module confict issue being resolved but it should be the recommanded one.
-	// When it is empty operator will use existing sercret
-	// Secret will not be regenerated if secret with secretName exists
-	Provider string `json:"provider,omitempty"`
-	// Prometheus and AlertManager' tls cert. Define the secret name. It will not be recreated when existing
-	// It can be created by either this operator or prometheus operator. Make sure secret name defined by both operator same
+	// Prometheus and AlertManager' tls cert. Define the secret name. It is created by cert manager
 	MonitoringSecret string `json:"monitoringSecret"`
-	//Define monitoring stack client(prometheus, exporters)'s tls cert secret. It will not be recreated when existing
-	//It can be created by either this operator or prometheus operator. Make sure secret name defined by both operator same
+	//Define monitoring stack client(prometheus, exporters)'s tls cert secret. It is created by cert manager
 	MonitoringClientSecret string `json:"monitoringClientSecret"`
-	// The issure name. It is used when provider is certmanager
+	// The issure name. It is used to generated tls certificates. All tls certificates of monitoring operators need to use same Issuer
 	Issuer string `json:"issuer"`
 }
 

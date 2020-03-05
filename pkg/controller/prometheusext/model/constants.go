@@ -81,7 +81,7 @@ const (
             listen 8443 ssl default_server;
             ssl_certificate server.crt;
             ssl_certificate_key server.key;
-            ssl_client_certificate /opt/ibm/router/caCerts/tls.crt;
+            ssl_client_certificate /opt/ibm/router/caCerts/ca.crt;
             ssl_verify_client on;
             ssl_protocols TLSv1.2;
             # Ref: https://github.com/cloudflare/sslconfig/blob/master/conf
@@ -184,7 +184,7 @@ const (
             listen 8443 ssl default_server;
             ssl_certificate server.crt;
             ssl_certificate_key server.key;
-            ssl_client_certificate /opt/ibm/router/caCerts/tls.crt;
+            ssl_client_certificate /opt/ibm/router/caCerts/ca.crt;
             ssl_verify_client on;
             ssl_protocols TLSv1.2;
             # Ref: https://github.com/cloudflare/sslconfig/blob/master/conf
@@ -567,7 +567,7 @@ const (
     scheme: https
 
     tls_config:
-      ca_file: /etc/prometheus/secrets/{{ .CASecretName }}/tls.crt
+      ca_file: /etc/prometheus/secrets/{{ .CASecretName }}/ca.crt
       cert_file: /etc/prometheus/secrets/{{ .ClientSecretName }}/tls.crt
       key_file: /etc/prometheus/secrets/{{ .ClientSecretName }}/tls.key
       insecure_skip_verify: true
@@ -620,7 +620,7 @@ const (
     scheme: https
 
     tls_config:
-      ca_file: /etc/prometheus/secrets/{{ .CASecretName }}/tls.crt
+      ca_file: /etc/prometheus/secrets/{{ .CASecretName }}/ca.crt
       cert_file: /etc/prometheus/secrets/{{ .ClientSecretName }}/tls.crt
       key_file: /etc/prometheus/secrets/{{ .ClientSecretName }}/tls.key
       insecure_skip_verify: true
