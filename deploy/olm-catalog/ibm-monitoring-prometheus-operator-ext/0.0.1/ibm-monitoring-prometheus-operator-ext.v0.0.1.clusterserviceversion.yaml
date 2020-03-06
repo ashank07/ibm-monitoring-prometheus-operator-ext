@@ -31,8 +31,7 @@ metadata:
               "idManagementSvc": "platform-identity-management",
               "idManagementSvcPort": 4500,
               "idProviderSvc": "platform-identity-provider",
-              "idProviderSvcPort": 4300,
-              "namespace": "kube-system"
+              "idProviderSvcPort": 4300
             },
             "imagePullSecrets": [
               "infra-registry-key"
@@ -99,6 +98,7 @@ spec:
           resources:
           - deployments
           - statefulsets
+          - replicasets
           verbs:
           - '*'
         - apiGroups:

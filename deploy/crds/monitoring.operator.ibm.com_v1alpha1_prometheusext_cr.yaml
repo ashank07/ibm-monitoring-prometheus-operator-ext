@@ -36,7 +36,6 @@ spec:
       monitoringClientSecret: ibm-monitoring-client-certs
       issuer: cs-ca-issuer 
     iamProvider:
-      namespace: kube-system
       idProviderSvc: platform-identity-provider
       idProviderSvcPort: 4300
       idManagementSvc: platform-identity-management
