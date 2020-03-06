@@ -14,7 +14,7 @@ metadata:
             "alertManagerConfig": {
               "imageRepo": "hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/alertmanager",
               "imageTag": "v0.20.0-build.1",
-              "logLevel": "debug",
+              "logLevel": "info",
               "serviceAccount": "ibm-monitoring-prometheusext-operand",
               "servicePort": 9093
             },
@@ -45,9 +45,9 @@ metadata:
             "prometheusConfig": {
               "imageRepo": "hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/prometheus",
               "imageTag": "v2.15.2-build.1",
-              "logLevel": "debug",
+              "logLevel": "info",
               "nodeCPUThreshold": 85,
-              "nodeMemoryThreshold": 8,
+              "nodeMemoryThreshold": 85,
               "retention": "24h",
               "serviceAccount": "ibm-monitoring-prometheusext-operand",
               "servicePort": 9090

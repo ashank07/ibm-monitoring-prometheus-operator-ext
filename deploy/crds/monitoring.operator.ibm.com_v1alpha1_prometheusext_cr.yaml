@@ -17,15 +17,15 @@ spec:
       imageTag: v2.15.2-build.1
       retention: 24h
       servicePort: 9090
-      nodeMemoryThreshold: 8
+      nodeMemoryThreshold: 85
       nodeCPUThreshold: 85
-      logLevel: debug
+      logLevel: info
     alertManagerConfig:
       serviceAccount: ibm-monitoring-prometheusext-operand
       imageRepo: hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/alertmanager
       imageTag: v0.20.0-build.1
       servicePort: 9093
-      logLevel: debug
+      logLevel: info
     mcmMonitor:
       isHubCluster: false
       image: hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/prometheus-controller:v1.1.0-build.2
