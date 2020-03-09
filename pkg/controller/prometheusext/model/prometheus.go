@@ -175,6 +175,7 @@ func PrometheusLabels(cr *promext.PrometheusExt) map[string]string {
 	labels := make(map[string]string)
 	labels[AppLabelKey] = AppLabekValue
 	labels[Component] = "prometheus"
+	labels[MeteringLabelKey] = MetringLabelValue
 	labels[managedLabelKey()] = managedLabelValue(cr)
 	for key, v := range cr.Labels {
 		labels[key] = v
@@ -195,7 +196,7 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 	spec := &promv1.PrometheusSpec{
 		PodMetadata: &metav1.ObjectMeta{
 			Labels:            PrometheusLabels(cr),
-			Annotations:       map[string]string{"pvJob": "true"},
+			Annotations:       commonPodAnnotations(),
 			CreationTimestamp: metav1.Time{Time: time.Now()},
 		},
 		BaseImage:              cr.Spec.PrometheusConfig.ImageRepo,

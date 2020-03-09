@@ -69,8 +69,9 @@ func mcmDeploymentSpec(cr *promext.PrometheusExt) (*appsv1.DeploymentSpec, error
 		},
 		Template: v1.PodTemplateSpec{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:   MCMCtlDeploymentName(cr),
-				Labels: msmcCtrlLabels(cr),
+				Name:        MCMCtlDeploymentName(cr),
+				Labels:      msmcCtrlLabels(cr),
+				Annotations: commonPodAnnotations(),
 			},
 			Spec: v1.PodSpec{
 				HostPID:     false,
@@ -212,6 +213,7 @@ func msmcCtrlLabels(cr *promext.PrometheusExt) map[string]string {
 	labels := make(map[string]string)
 	labels[AppLabelKey] = AppLabekValue
 	labels[Component] = "mcm-ctl"
+	labels[MeteringLabelKey] = MetringLabelValue
 	labels[managedLabelKey()] = managedLabelValue(cr)
 	for key, v := range cr.Labels {
 		labels[key] = v

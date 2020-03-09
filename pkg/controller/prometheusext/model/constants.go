@@ -37,6 +37,15 @@ const (
 	//Grafana means object is grafana. It is only for certification dnsNames here
 	Grafana = ObjectType("grafana")
 
+	//MeteringLabelKey lable key for metering check
+	MeteringLabelKey = "app.kubernetes.io/instance"
+	//MetringLabelValue label value for metering check
+	MetringLabelValue = "monitoring"
+	//MeteringAnnlKey annotation key for metering check
+	MeteringAnnlKey = "clusterhealth.ibm.com/dependencies"
+	//MetringAnnValue annotation value for metering check
+	MetringAnnValue = "cert-manager"
+
 	defaultHelmPort      = int32(3000)
 	defaultClusterDomain = "cluster.local"
 	defaultClusterName   = "mycluster"

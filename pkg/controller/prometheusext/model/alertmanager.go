@@ -38,6 +38,7 @@ func alertmanagerLabels(cr *promext.PrometheusExt) map[string]string {
 	labels := make(map[string]string)
 	labels[AppLabelKey] = AppLabekValue
 	labels[Component] = "alertmanager"
+	labels[MeteringLabelKey] = MetringLabelValue
 	labels[managedLabelKey()] = managedLabelValue(cr)
 	for key, v := range cr.Labels {
 		labels[key] = v
@@ -78,7 +79,7 @@ func NewAlertmanager(cr *promext.PrometheusExt) (*promv1.Alertmanager, error) {
 		Spec: promv1.AlertmanagerSpec{
 			PodMetadata: &metav1.ObjectMeta{
 				Labels:            alertmanagerLabels(cr),
-				Annotations:       map[string]string{"pvJob": "true"},
+				Annotations:       commonPodAnnotations(),
 				CreationTimestamp: metav1.Time{Time: time.Now()},
 			},
 			BaseImage:   cr.Spec.AlertManagerConfig.ImageRepo,
@@ -146,7 +147,7 @@ func UpdatedAlertmanager(cr *promext.PrometheusExt, curr *promv1.Alertmanager) (
 	am := curr.DeepCopy()
 	am.Labels = alertmanagerLabels(cr)
 	am.Spec.PodMetadata.Labels = alertmanagerLabels(cr)
-	am.Spec.PodMetadata.Annotations = map[string]string{"pvJob": "true"}
+	am.Spec.PodMetadata.Annotations = commonPodAnnotations()
 	am.Spec.BaseImage = cr.Spec.AlertManagerConfig.ImageRepo
 	am.Spec.Version = cr.Spec.AlertManagerConfig.ImageTag
 	am.Spec.Resources = cr.Spec.AlertManagerConfig.Resources

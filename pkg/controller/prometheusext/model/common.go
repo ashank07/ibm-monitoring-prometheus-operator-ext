@@ -64,6 +64,13 @@ func MCMCtlDeploymentName(cr *monitoringv1alpha1.PrometheusExt) string {
 	return cr.Name + "-mcm-ctl"
 }
 
+func commonPodAnnotations() map[string]string {
+	return map[string]string{
+		"clusterhealth.ibm.com/dependencies": "cert-manager, icp-management-ingress, auth-idp",
+		"pvJob":                              "true",
+	}
+}
+
 //IReqeueError defines interface for requeueError
 type IReqeueError interface {
 	Reason() string
