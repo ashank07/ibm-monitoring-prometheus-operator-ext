@@ -114,9 +114,14 @@ spec:
           - certmanager.k8s.io
           resources:
           - certificates
-          - issuers
           verbs:
           - '*'
+        - apiGroups:
+          - certmanager.k8s.io
+          resources:
+          - clusterissuers
+          verbs:
+          - use
         - apiGroups:
           - monitoring.operator.ibm.com
           resources:
