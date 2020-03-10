@@ -35,6 +35,7 @@ spec:
       monitoringSecret: ibm-monitoring-certs
       monitoringClientSecret: ibm-monitoring-client-certs
       issuer: cs-ca-clusterissuer
+      autoClean: true
     iamProvider:
       idProviderSvc: platform-identity-provider
       idProviderSvcPort: 4300

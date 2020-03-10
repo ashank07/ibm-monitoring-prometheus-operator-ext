@@ -17,35 +17,67 @@
 package reconsiler
 
 import (
+	v1 "k8s.io/api/core/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 )
 
 func (r *Reconsiler) syncSecrets() error {
-	if r.CurrentState.MonitoringSecret == nil {
-		cert := model.NewCertitication(r.CR.Spec.Certs.MonitoringSecret, r.CR, model.MonitoringDNSNames(r.CR))
-		if err := r.createObject(cert); err != nil {
-			if kerrors.IsAlreadyExists(err) {
-				return model.NewRequeueError("reconsiler.syncSecret", "certificate "+cert.Name+"exist already and requeue to wait secret")
-			}
-			log.Error(err, "Failed to create certificate "+cert.Name)
-			return err
-		}
+	if err := r.syncSecret(r.CurrentState.MonitoringSecret, r.CR.Spec.Certs.MonitoringSecret, model.MonitoringDNSNames(r.CR)); err != nil {
+		return err
 	}
 	log.Info("monitoring certificate is sync")
-	if r.CurrentState.MonitoringClientSecret == nil {
-		cert := model.NewCertitication(r.CR.Spec.Certs.MonitoringClientSecret, r.CR, []string{})
-		if err := r.createObject(cert); err != nil {
-			if kerrors.IsAlreadyExists(err) {
-				return model.NewRequeueError("reconsiler.syncSecret", "certificate "+cert.Name+"exist already and requeue to wait secret")
-			}
-			log.Error(err, "Failed to create certificate "+cert.Name)
-			return err
-		}
+	if err := r.syncSecret(r.CurrentState.MonitoringClientSecret, r.CR.Spec.Certs.MonitoringClientSecret, []string{}); err != nil {
+		return err
 	}
 	log.Info("monitoring client certificate is sync")
 	return nil
+}
+func (r *Reconsiler) syncSecret(currentSecret *v1.Secret, secretName string, dnsNames []string) error {
+	cert := model.NewCertitication(secretName, r.CR, dnsNames)
+	if currentSecret != nil {
+		if r.CR.Spec.Certs.AutoClean {
+			key := client.ObjectKey{Name: cert.Name, Namespace: cert.Namespace}
+			if err := r.Client.Get(r.Context, key, cert); err != nil {
+				if kerrors.IsNotFound(err) {
+					//secret exists but no certicate
+					//delete the secret and create new one
+					log.Info("Deleting tls secret" + secretName + "which is old and out of control")
+					if err = r.Client.Delete(r.Context, currentSecret); err != nil {
+						log.Error(err, "Failed to delete old tls secret: "+secretName)
+						return err
+					}
+
+				} else {
+					//failed to get certificate because other errors
+					log.Error(err, "Failed to get certification object: "+secretName)
+					return err
+
+				}
+			} else {
+				return nil
+			}
+
+		} else {
+			// when it is not autoclean keep secret no matter who created it
+			log.Info("Exporter cert secret exists")
+			return nil
+		}
+	}
+
+	if err := r.createObject(cert); err != nil {
+		if kerrors.IsAlreadyExists(err) {
+			log.Info("certificate object already exists.")
+			return model.NewRequeueError("syncCertSecret", "wait for cert secret to be created after creating certificate object")
+		}
+		log.Error(err, "Failed to create certificate")
+		return err
+	}
+	// We can not verify if secret is created or not for now so return to next loop
+	return model.NewRequeueError("syncCertSecret", "wait for cert secret to be created after creating certification object")
+
 }
 func (r *Reconsiler) syncRouterCms() error {
 	if err := r.syncRouterEntryCm(); err != nil {

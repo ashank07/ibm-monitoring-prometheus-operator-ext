@@ -21,7 +21,8 @@ metadata:
             "certs": {
               "issuer": "cs-ca-clusterissuer",
               "monitoringClientSecret": "ibm-monitoring-client-certs",
-              "monitoringSecret": "ibm-monitoring-certs"
+              "monitoringSecret": "ibm-monitoring-certs",
+              "autoClean": true
             },
             "clusterAddress": "icp-console.apps.dybo-ocp4.os.fyre.ibm.com",
             "clusterPort": 8443,

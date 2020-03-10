@@ -99,6 +99,9 @@ type Certs struct {
 	MonitoringClientSecret string `json:"monitoringClientSecret"`
 	// The issure name. It is used to generated tls certificates. All tls certificates of monitoring operators need to use same Issuer
 	Issuer string `json:"issuer"`
+	// If it is false, user can create secret manually before creating CR and operator will not recreate it if secret exists already
+	// If it is true, operator will recreate secret if it is not created by certificate (cert-manager)
+	AutoClean bool `json:"autoClean,omitempty"`
 }
 
 // MCMMonitor defines multimple cloud monitoring related information

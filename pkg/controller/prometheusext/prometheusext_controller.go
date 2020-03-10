@@ -18,6 +18,7 @@ package prometheusext
 
 import (
 	"context"
+	"time"
 
 	promev1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
 	appsv1 "k8s.io/api/apps/v1"
@@ -33,6 +34,7 @@ import (
 
 	exportersv1alpha1 "github.com/IBM/ibm-monitoring-exporters-operator/pkg/apis/monitoring/v1alpha1"
 	monitoringv1alpha1 "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
+	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/reconsiler"
 )
 
@@ -151,7 +153,10 @@ func (r *ReconcilePrometheusExt) Reconcile(request reconcile.Request) (reconcile
 		return reconcile.Result{}, err
 	}
 	if err := reconsiler.Sync(); err != nil {
-		return reconcile.Result{}, err
+		if !model.IsRequeueErr(err) {
+			return reconcile.Result{}, err
+		}
+		return reconcile.Result{Requeue: true, RequeueAfter: time.Second}, nil
 	}
 
 	return reconcile.Result{}, nil
