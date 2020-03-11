@@ -40,11 +40,11 @@ const (
 	//MeteringLabelKey lable key for metering check
 	MeteringLabelKey = "app.kubernetes.io/instance"
 	//MetringLabelValue label value for metering check
-	MetringLabelValue = "monitoring"
+	MetringLabelValue = "common-monitoring"
 	//MeteringAnnlKey annotation key for metering check
 	MeteringAnnlKey = "clusterhealth.ibm.com/dependencies"
 	//MetringAnnValue annotation value for metering check
-	MetringAnnValue = "cert-manager"
+	MetringAnnValue = "cert-manager, icp-management-ingress, common-iam"
 
 	defaultHelmPort      = int32(3000)
 	defaultClusterDomain = "cluster.local"

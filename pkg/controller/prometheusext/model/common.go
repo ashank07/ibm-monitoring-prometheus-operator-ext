@@ -66,8 +66,8 @@ func MCMCtlDeploymentName(cr *monitoringv1alpha1.PrometheusExt) string {
 
 func commonPodAnnotations() map[string]string {
 	return map[string]string{
-		"clusterhealth.ibm.com/dependencies": "cert-manager, icp-management-ingress, auth-idp",
-		"pvJob":                              "true",
+		MeteringAnnlKey: MetringAnnValue,
+		"pvJob":         "true",
 	}
 }
 
