@@ -191,9 +191,15 @@ func UpdatedProLuaUtilsCm(cr *promext.PrometheusExt, curr *v1.ConfigMap) (*v1.Co
 		clusterName = cr.Spec.ClusterName
 
 	}
+	clusterDomain := defaultClusterDomain
+	if cr.Spec.ClusterDomain != "" {
+		clusterDomain = cr.Spec.ClusterDomain
+
+	}
 
 	paras := luaUtilsParas{
 		ClusterName:          clusterName,
+		ClusterDomain:        clusterDomain,
 		Namespace:            cr.Namespace,
 		PrometheusSvcName:    PromethuesName(cr),
 		PrometheusSvcPort:    fmt.Sprintf("%d", cr.Spec.PrometheusConfig.ServicePort),
@@ -236,7 +242,7 @@ type luaUtilsParas struct {
 func NewProLuaUtilsCm(cr *promext.PrometheusExt) (*v1.ConfigMap, error) {
 
 	var tplBuffer bytes.Buffer
-	clusterDomain := "cluster.local"
+	clusterDomain := defaultClusterDomain
 	if cr.Spec.ClusterDomain != "" {
 		clusterDomain = cr.Spec.ClusterDomain
 
