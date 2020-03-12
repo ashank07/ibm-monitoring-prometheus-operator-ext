@@ -44,7 +44,7 @@ const (
 	//MeteringAnnlKey annotation key for metering check
 	MeteringAnnlKey = "clusterhealth.ibm.com/dependencies"
 	//MetringAnnValue annotation value for metering check
-	MetringAnnValue = "cert-manager, icp-management-ingress, common-iam"
+	MetringAnnValue = "cert-manager, icp-management-ingress, auth-idp"
 
 	defaultHelmPort      = int32(3000)
 	defaultClusterDomain = "cluster.local"
