@@ -53,7 +53,7 @@ metadata:
               "serviceAccount": "ibm-monitoring-prometheusext-operand",
               "servicePort": 9090
             },
-            "routerImage": "hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-management-ingress:2.5.0",
+            "routerImage": "hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-management-ingress:2.5.1",
             "storageClassName": "rook-ceph-block-internal"
           }
         }
