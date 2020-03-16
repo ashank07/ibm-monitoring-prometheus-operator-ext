@@ -160,6 +160,10 @@ func (r *Reconsiler) readExporter() error {
 		log.Error(err, "Failed to list exporters")
 		return err
 	}
+	if len(exporters.Items) == 0 {
+		r.CurrentState.Exporter = nil
+		return nil
+	}
 	// We assume there is only or exporter CR
 	r.CurrentState.Exporter = &(exporters.Items[0])
 	return nil

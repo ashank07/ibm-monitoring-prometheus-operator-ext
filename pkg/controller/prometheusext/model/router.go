@@ -108,13 +108,28 @@ func ProLuaUtilsCmName(cr *promext.PrometheusExt) string {
 func UpdatedProLuaCm(cr *promext.PrometheusExt, curr *v1.ConfigMap) (*v1.ConfigMap, error) {
 	cm := curr.DeepCopy()
 	var tplBuffer bytes.Buffer
+	helmNamespace := cr.Namespace
+	if cr.Spec.HelmReleasesMonitor.Namespace != "" {
+		helmNamespace = cr.Spec.HelmReleasesMonitor.Namespace
+	}
+	helmPort := defaultHelmPort
+	if cr.Spec.HelmReleasesMonitor.Port != 0 {
+		helmPort = cr.Spec.HelmReleasesMonitor.Port
+
+	}
+	clusterDomain := defaultClusterDomain
+	if cr.Spec.ClusterDomain != "" {
+		clusterDomain = cr.Spec.ClusterDomain
+	}
 	paras := luaParas{
-		Standalone: !cr.Spec.MCMMonitor.IsHubCluster,
-		Managed:    true,
-		Openshift:  true,
-		//TODO: are them right?
+		Standalone:          !cr.Spec.MCMMonitor.IsHubCluster,
+		Managed:             true,
+		Openshift:           true,
 		AlertmanagerSvcName: AlertmanagerName(cr),
 		AlertmanagerSvcPort: fmt.Sprintf("%d", cr.Spec.AlertManagerConfig.ServicePort),
+		HelmNamespace:       helmNamespace,
+		HelmPort:            helmPort,
+		ClusterDomain:       clusterDomain,
 	}
 	if err := prometheusLuaTemplate.Execute(&tplBuffer, paras); err != nil {
 		return nil, err
@@ -152,7 +167,6 @@ func NewProLuaCm(cr *promext.PrometheusExt) (*v1.ConfigMap, error) {
 	clusterDomain := defaultClusterDomain
 	if cr.Spec.ClusterDomain != "" {
 		clusterDomain = cr.Spec.ClusterDomain
-
 	}
 	paras := luaParas{
 		Standalone:          !cr.Spec.MCMMonitor.IsHubCluster,
