@@ -5,16 +5,16 @@ metadata:
 spec:
     storageClassName: rook-ceph-block-internal
     clusterAddress: "icp-console.apps.dybo-ocp4.os.fyre.ibm.com"
-    clusterPort: 8443
+    clusterPort: 443
     grafanaSvcName: "ibm-monitoring-grafana"
-    grafanaSvcPort: 8090
+    grafanaSvcPort: 3000
     imagePullSecrets:
     - infra-registry-key
-    routerImage: hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-management-ingress:2.5.1
+    routerImage: registry.mixhub.cn/integration/icp-management-ingress:2.5.1
     prometheusConfig:
       serviceAccount: ibm-monitoring-prometheusext-operand
-      imageRepo: hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/prometheus
-      imageTag: v2.15.2-build.1
+      imageRepo: registry.mixhub.cn/integration/prometheus
+      imageTag: v2.15.2-build.2
       retention: 24h
       servicePort: 9090
       nodeMemoryThreshold: 85
@@ -22,14 +22,14 @@ spec:
       logLevel: info
     alertManagerConfig:
       serviceAccount: ibm-monitoring-prometheusext-operand
-      imageRepo: hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/alertmanager
-      imageTag: v0.20.0-build.1
+      imageRepo: registry.mixhub.cn/integration/alertmanager
+      imageTag: v0.20.0-build.2
       servicePort: 9093
       logLevel: info
     mcmMonitor:
       isHubCluster: false
-      image: hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/prometheus-controller:v1.1.0-build.2
-      helpeImage: hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-initcontainer:1.0.0-build.2
+      image: registry.mixhub.cn/integration/prometheus-controller:v1.1.0-build.3
+      helpeImage: registry.mixhub.cn/integration/icp-initcontainer:1.0.0-build.3
       serviceAccount: ibm-monitoring-mcm-ctl
     certs:
       monitoringSecret: ibm-monitoring-certs

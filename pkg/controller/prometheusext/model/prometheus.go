@@ -173,7 +173,7 @@ func UpdatedPrometheusIngress(cr *promext.PrometheusExt, currentIngress *ev1beta
 //PrometheusLabels return labels for prometheus objects
 func PrometheusLabels(cr *promext.PrometheusExt) map[string]string {
 	labels := make(map[string]string)
-	labels[AppLabelKey] = AppLabekValue
+	labels[AppLabelKey] = AppLabelValue
 	labels[Component] = "prometheus"
 	labels[HealthCheckKey] = HealthCheckLabelValue
 	labels[managedLabelKey()] = managedLabelValue(cr)
@@ -199,15 +199,23 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 			Annotations:       commonPodAnnotations(),
 			CreationTimestamp: metav1.Time{Time: time.Now()},
 		},
-		BaseImage:              cr.Spec.PrometheusConfig.ImageRepo,
-		Version:                cr.Spec.PrometheusConfig.ImageTag,
-		Replicas:               &replicas,
-		EnableAdminAPI:         true,
-		Resources:              cr.Spec.PrometheusConfig.Resources,
-		RoutePrefix:            "/prometheus",
-		Secrets:                []string{cr.Spec.Certs.MonitoringSecret, cr.Spec.Certs.MonitoringClientSecret},
-		ConfigMaps:             []string{ProRouterNgCmName(cr), RouterEntryCmName(cr), ProLuaCmName(cr), ProLuaUtilsCmName(cr)},
-		ServiceMonitorSelector: &metav1.LabelSelector{MatchLabels: map[string]string{AppLabelKey: AppLabekValue}},
+		BaseImage:      cr.Spec.PrometheusConfig.ImageRepo,
+		Version:        cr.Spec.PrometheusConfig.ImageTag,
+		Replicas:       &replicas,
+		EnableAdminAPI: true,
+		Resources:      cr.Spec.PrometheusConfig.Resources,
+		RoutePrefix:    "/prometheus",
+		Secrets:        []string{cr.Spec.Certs.MonitoringSecret, cr.Spec.Certs.MonitoringClientSecret},
+		ConfigMaps:     []string{ProRouterNgCmName(cr), RouterEntryCmName(cr), ProLuaCmName(cr), ProLuaUtilsCmName(cr)},
+		ServiceMonitorSelector: &metav1.LabelSelector{
+			MatchExpressions: []metav1.LabelSelectorRequirement{
+				{
+					Key:      Component,
+					Operator: "NotIn",
+					Values:   []string{hubPromemetheus},
+				},
+			},
+		},
 		AdditionalScrapeConfigs: &v1.SecretKeySelector{
 			LocalObjectReference: v1.LocalObjectReference{
 				Name: ScrapeTargetsSecretName(cr),
@@ -245,9 +253,17 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 			},
 		},
 	}
-	//Select all rules in current namespace
+	//Select all rules in current namespace but those for multicloud monitoring
 	//spec.RuleNamespaceSelector = &metav1.LabelSelector{}
-	spec.RuleSelector = &metav1.LabelSelector{}
+	spec.RuleSelector = &metav1.LabelSelector{
+		MatchExpressions: []metav1.LabelSelectorRequirement{
+			{
+				Key:      Component,
+				Operator: "NotIn",
+				Values:   []string{hubPromemetheus},
+			},
+		},
+	}
 
 	if cr.Spec.ImagePullSecrets != nil && len(cr.Spec.ImagePullSecrets) != 0 {
 		var secrets []v1.LocalObjectReference

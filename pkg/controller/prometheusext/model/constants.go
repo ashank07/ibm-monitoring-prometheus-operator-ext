@@ -19,8 +19,9 @@ package model
 const (
 	//AppLabelKey is key of label
 	AppLabelKey = "cs/app"
-	//AppLabekValue is value of label
-	AppLabekValue = "ibm-monitoring"
+	//AppLabelValue is value of label
+	AppLabelValue   = "ibm-monitoring"
+	hubPromemetheus = "hub-prometheus"
 
 	//Component is string "component"
 	Component = "component"

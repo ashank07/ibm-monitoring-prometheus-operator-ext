@@ -16,31 +16,33 @@
 
 package reconsiler
 
-func (r *Reconsiler) syncMCMCtl() error {
-	/*
-		if r.CurrentState.MCMCtrlDeployment == nil {
-			deployment, err := model.NewMCMCtlDeployment(r.CR)
-			if err != nil {
-				log.Error(err, "Failed to create deployment object for MCM controller")
-				return err
-			}
-			if err = r.createObject(deployment); err != nil {
-				log.Error(err, "Failed to create deployment for MCM controller in cluster")
-				return err
-			}
-		} else {
-			deployment, err := model.UpdatedMCMCtlDeployment(r.CR, r.CurrentState.MCMCtrlDeployment)
-			if err != nil {
-				log.Error(err, "Failed to create deployment object for MCM controller")
-				return err
+import "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 
-			}
-			if err = r.updateObject(deployment); err != nil {
-				log.Error(err, "Failed to update mcm controller deployment in cluster")
-				return err
-			}
+func (r *Reconsiler) syncMCMCtl() error {
+
+	if r.CurrentState.MCMCtrlDeployment == nil {
+		deployment, err := model.NewMCMCtlDeployment(r.CR)
+		if err != nil {
+			log.Error(err, "Failed to create deployment object for MCM controller")
+			return err
 		}
-		log.Info("mcm controller deployment is sync")
-	*/
+		if err = r.createObject(deployment); err != nil {
+			log.Error(err, "Failed to create deployment for MCM controller in cluster")
+			return err
+		}
+	} else {
+		deployment, err := model.UpdatedMCMCtlDeployment(r.CR, r.CurrentState.MCMCtrlDeployment)
+		if err != nil {
+			log.Error(err, "Failed to create deployment object for MCM controller")
+			return err
+
+		}
+		if err = r.updateObject(deployment); err != nil {
+			log.Error(err, "Failed to update mcm controller deployment in cluster")
+			return err
+		}
+	}
+	log.Info("mcm controller deployment is sync")
+
 	return nil
 }

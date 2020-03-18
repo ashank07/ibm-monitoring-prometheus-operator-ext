@@ -36,7 +36,7 @@ func AlertmanagerName(cr *promext.PrometheusExt) string {
 }
 func alertmanagerLabels(cr *promext.PrometheusExt) map[string]string {
 	labels := make(map[string]string)
-	labels[AppLabelKey] = AppLabekValue
+	labels[AppLabelKey] = AppLabelValue
 	labels[Component] = "alertmanager"
 	labels[HealthCheckKey] = HealthCheckLabelValue
 	labels[managedLabelKey()] = managedLabelValue(cr)

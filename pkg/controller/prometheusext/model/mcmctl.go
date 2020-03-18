@@ -19,6 +19,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -27,8 +28,11 @@ import (
 	promext "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
 )
 
+var creationTime *metav1.Time = nil
+
 //NewMCMCtlDeployment create new deployment object for mcm controller
 func NewMCMCtlDeployment(cr *promext.PrometheusExt) (*appsv1.Deployment, error) {
+	creationTime = &metav1.Time{Time: time.Now()}
 	spec, err := mcmDeploymentSpec(cr)
 	if err != nil {
 		return nil, err
@@ -53,10 +57,18 @@ func UpdatedMCMCtlDeployment(cr *promext.PrometheusExt, curr *appsv1.Deployment)
 	if err != nil {
 		return nil, err
 	}
+
 	deployment := curr.DeepCopy()
 	deployment.ObjectMeta.Labels = msmcCtrlLabels(cr)
+	deployment.Spec.Selector = spec.Selector
 
-	deployment.Spec = *spec
+	deployment.Spec.Template.ObjectMeta.Labels = spec.Template.ObjectMeta.Labels
+	deployment.Spec.Template.ObjectMeta.Annotations = spec.Template.ObjectMeta.Annotations
+	deployment.Spec.Template.Spec.Containers = spec.Template.Spec.Containers
+	deployment.Spec.Template.Spec.Volumes = spec.Template.Spec.Volumes
+	deployment.Spec.Template.Spec.ImagePullSecrets = spec.Template.Spec.ImagePullSecrets
+	deployment.Spec.Template.Spec.ServiceAccountName = spec.Template.Spec.ServiceAccountName
+
 	return deployment, nil
 
 }
@@ -121,28 +133,27 @@ func mcmDeploymentSpec(cr *promext.PrometheusExt) (*appsv1.DeploymentSpec, error
 	return spec, nil
 
 }
+
 func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 	drops := []v1.Capability{"ALL"}
 	pe := false
 	p := false
-	configmaps := map[string]string{
-		"/opt/ibm/router/conf":                           ProRouterNgCmName(cr),
-		"/opt/ibm/router/entry":                          RouterEntryCmName(cr),
-		"/opt/ibm/router/nginx/conf/prom.lua":            ProLuaCmName(cr),
-		"/opt/ibm/router/nginx/conf/monitoring-util.lua": ProLuaUtilsCmName(cr),
+	prometheus, perr := NewPrometheus(cr)
+	prometheus.Spec.PodMetadata.CreationTimestamp = *creationTime
+	if perr != nil {
+		return nil, perr
 	}
-	cmStr, err := json.Marshal(configmaps)
-	if err != nil {
-		return nil, err
+	prometheus.Name = "ibm-monitoring-prometheus-hub"
+	prometheus.ObjectMeta.Labels[Component] = hubPromemetheus
+	prometheus.Spec.RuleSelector = &metav1.LabelSelector{
+		MatchLabels: map[string]string{Component: hubPromemetheus},
 	}
-	secrets := map[string]string{
-		"/opt/ibm/router/caCerts": cr.Spec.MonitoringSecret,
-		"/opt/ibm/router/certs":   cr.Spec.Certs.MonitoringSecret,
-		"":                        cr.Spec.MonitoringClientSecret,
-	}
-	secretStr, err := json.Marshal(secrets)
-	if err != nil {
-		return nil, err
+	prometheus.Spec.Storage = nil
+	prometheus.Spec.AdditionalScrapeConfigs = nil
+	prometheus.Spec.PodMetadata.Labels[AppLabelKey] = hubPromemetheus
+	prometheusStr, merr := json.Marshal(prometheus)
+	if merr != nil {
+		return nil, merr
 	}
 
 	container := &v1.Container{
@@ -159,10 +170,6 @@ func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 		Resources: cr.Spec.MCMMonitor.Resources,
 		Env: []v1.EnvVar{
 			{
-				Name:  "INIT_IMAGE",
-				Value: cr.Spec.MCMMonitor.HelperImage,
-			},
-			{
 				Name:  "NAMESPACES",
 				Value: cr.Namespace,
 			},
@@ -171,28 +178,16 @@ func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 				Value: cr.Namespace,
 			},
 			{
-				Name:  "CLUSTER_ADDRESS",
-				Value: cr.Spec.ClusterAddress,
-			},
-			{
-				Name:  "CLUSTER_PORT",
-				Value: fmt.Sprint(cr.Spec.ClusterPort),
-			},
-			{
 				Name:  "IS_HUB_CLUSTER",
 				Value: fmt.Sprint(cr.Spec.MCMMonitor.IsHubCluster),
 			},
 			{
-				Name:  "ALERTMANAGER_NAME",
-				Value: AlertmanagerName(cr),
+				Name:  "GRAFANA_BASE_URL",
+				Value: fmt.Sprintf("https://%s:%d/", cr.Spec.GrafanaSvcName, cr.Spec.GrafanaSvcPort),
 			},
 			{
-				Name:  "CONFIGMAPS",
-				Value: string(cmStr),
-			},
-			{
-				Name:  "SECRETS",
-				Value: string(secretStr),
+				Name:  "PROMETHEUS_YAML",
+				Value: string(prometheusStr),
 			},
 		},
 		VolumeMounts: []v1.VolumeMount{
@@ -211,7 +206,7 @@ func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 }
 func msmcCtrlLabels(cr *promext.PrometheusExt) map[string]string {
 	labels := make(map[string]string)
-	labels[AppLabelKey] = AppLabekValue
+	labels[AppLabelKey] = AppLabelValue
 	labels[Component] = "mcm-ctl"
 	labels[HealthCheckKey] = HealthCheckLabelValue
 	labels[managedLabelKey()] = managedLabelValue(cr)

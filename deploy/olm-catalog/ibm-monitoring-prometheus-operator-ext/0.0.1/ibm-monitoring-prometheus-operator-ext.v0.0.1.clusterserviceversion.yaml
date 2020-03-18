@@ -12,8 +12,8 @@ metadata:
           },
           "spec": {
             "alertManagerConfig": {
-              "imageRepo": "hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/alertmanager",
-              "imageTag": "v0.20.0-build.1",
+              "imageRepo": "registry.mixhub.cn/integration/alertmanager",
+              "imageTag": "v0.20.0-build.2",
               "logLevel": "info",
               "serviceAccount": "ibm-monitoring-prometheusext-operand",
               "servicePort": 9093
@@ -25,9 +25,9 @@ metadata:
               "autoClean": true
             },
             "clusterAddress": "icp-console.apps.dybo-ocp4.os.fyre.ibm.com",
-            "clusterPort": 8443,
+            "clusterPort": 443,
             "grafanaSvcName": "ibm-monitoring-grafana",
-            "grafanaSvcPort": 8090,
+            "grafanaSvcPort": 3000,
             "iamProvider": {
               "idManagementSvc": "platform-identity-management",
               "idManagementSvcPort": 4500,
@@ -38,14 +38,14 @@ metadata:
               "infra-registry-key"
             ],
             "mcmMonitor": {
-              "helpeImage": "hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-initcontainer:1.0.0-build.2",
-              "image": "hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/prometheus-controller:v1.1.0-build.2",
+              "helpeImage": "registry.mixhub.cn/integration/icp-initcontainer:1.0.0-build.3",
+              "image": "registry.mixhub.cn/integration/prometheus-controller:v1.1.0-build.3",
               "isHubCluster": false,
               "serviceAccount": "ibm-monitoring-mcm-ctl"
             },
             "prometheusConfig": {
-              "imageRepo": "hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/prometheus",
-              "imageTag": "v2.15.2-build.1",
+              "imageRepo": "registry.mixhub.cn/integration/prometheus",
+              "imageTag": "v2.15.2-build.2",
               "logLevel": "info",
               "nodeCPUThreshold": 85,
               "nodeMemoryThreshold": 85,
@@ -53,7 +53,7 @@ metadata:
               "serviceAccount": "ibm-monitoring-prometheusext-operand",
               "servicePort": 9090
             },
-            "routerImage": "hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-management-ingress:2.5.1",
+            "routerImage": "registry.mixhub.cn/integration/icp-management-ingress:2.5.1",
             "storageClassName": "rook-ceph-block-internal"
           }
         }
