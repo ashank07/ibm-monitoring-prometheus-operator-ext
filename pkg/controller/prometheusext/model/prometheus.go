@@ -175,7 +175,7 @@ func PrometheusLabels(cr *promext.PrometheusExt) map[string]string {
 	labels := make(map[string]string)
 	labels[AppLabelKey] = AppLabekValue
 	labels[Component] = "prometheus"
-	labels[MeteringLabelKey] = MetringLabelValue
+	labels[HealthCheckKey] = HealthCheckLabelValue
 	labels[managedLabelKey()] = managedLabelValue(cr)
 	for key, v := range cr.Labels {
 		labels[key] = v

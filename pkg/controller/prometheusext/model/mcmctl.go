@@ -213,7 +213,7 @@ func msmcCtrlLabels(cr *promext.PrometheusExt) map[string]string {
 	labels := make(map[string]string)
 	labels[AppLabelKey] = AppLabekValue
 	labels[Component] = "mcm-ctl"
-	labels[MeteringLabelKey] = MetringLabelValue
+	labels[HealthCheckKey] = HealthCheckLabelValue
 	labels[managedLabelKey()] = managedLabelValue(cr)
 	for key, v := range cr.Labels {
 		labels[key] = v
