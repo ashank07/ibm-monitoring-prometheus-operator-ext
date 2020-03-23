@@ -53,6 +53,7 @@ func NewMCMCtlDeployment(cr *promext.PrometheusExt) (*appsv1.Deployment, error) 
 
 //UpdatedMCMCtlDeployment create updated deployment object for mcm controller
 func UpdatedMCMCtlDeployment(cr *promext.PrometheusExt, curr *appsv1.Deployment) (*appsv1.Deployment, error) {
+	creationTime = &curr.ObjectMeta.CreationTimestamp
 	spec, err := mcmDeploymentSpec(cr)
 	if err != nil {
 		return nil, err
