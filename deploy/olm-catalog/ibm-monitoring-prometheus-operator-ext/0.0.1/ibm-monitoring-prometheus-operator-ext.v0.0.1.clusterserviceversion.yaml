@@ -70,12 +70,6 @@ spec:
       name: prometheusexts.monitoring.operator.ibm.com
       version: v1alpha1
       displayName: Prometheus Operator Extension
-    required:
-    - description: A running Prometheus instance
-      displayName: Prometheus
-      kind: Prometheus
-      name: prometheuses.monitoring.coreos.com
-      version: v1
   description: Operator deploys Prometheus and Alertmanager instances with RBAC enabled. It will also enable Multicloud monitoring
   displayName: IBM Monitoring Prometheus Operator Extension
   install:
