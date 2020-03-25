@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ibm-monitoring-prometheus-operator-ext
+  
 spec:
   replicas: 1
   selector:
@@ -11,6 +12,11 @@ spec:
     metadata:
       labels:
         name: ibm-monitoring-prometheus-operator-ext
+      annotations:
+        productName: IBM Cloud Platform Common Services
+        productID: "068a62892a1e4db39641342e592daa25"
+        productVersion: "3.3.0"
+        productMetric: FREE
     spec:
       serviceAccountName: ibm-monitoring-prometheus-operator-ext
       containers:
