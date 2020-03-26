@@ -17,6 +17,7 @@
 package v1alpha1
 
 import (
+	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -129,6 +130,13 @@ type PrometheusExtStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
+
+	PrometheusOperator appsv1.DeploymentStatus `json:"prometheusOperator,omitempty"`
+	Prometheus         string                  `json:"prometheus,omitempty"`
+	Alertmanager       string                  `json:"alertmanager,omitempty"`
+	Exporter           string                  `json:"exporter,omitempty"`
+	Secrets            string                  `json:"secrets,omitempty"`
+	Configmaps         string                  `json:"configmaps,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

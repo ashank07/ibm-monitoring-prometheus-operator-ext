@@ -50,6 +50,7 @@ rules:
   resources:
   - prometheusexts
   - prometheusexts/finalizers
+  - prometheusexts/status
   verbs:
   - '*'
 - apiGroups:

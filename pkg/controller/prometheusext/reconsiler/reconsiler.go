@@ -18,6 +18,7 @@ package reconsiler
 
 import (
 	"context"
+	"strings"
 
 	promev1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
 	appsv1 "k8s.io/api/apps/v1"
@@ -25,15 +26,16 @@ import (
 	apisv1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 
-	exportersv1alpha1 "github.com/IBM/ibm-monitoring-exporters-operator/pkg/apis/monitoring/v1alpha1"
-	"github.com/IBM/ibm-monitoring-exporters-operator/pkg/controller/exporter/model"
-	monitoringv1alpha1 "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
-
 	ev1beta1 "k8s.io/api/extensions/v1beta1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
+
+	exportersv1alpha1 "github.com/IBM/ibm-monitoring-exporters-operator/pkg/apis/monitoring/v1alpha1"
+	"github.com/IBM/ibm-monitoring-exporters-operator/pkg/controller/exporter/model"
+	monitoringv1alpha1 "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
+	promodel "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 )
 
 var log = logf.Log.WithName("prometheus-operator-ext.reconsiler")
@@ -97,6 +99,7 @@ func (r *Reconsiler) ReadClusterState() error {
 
 // Sync makes cluster state as expected
 func (r *Reconsiler) Sync() error {
+	r.updateStatus()
 	if err := r.syncProOperatorDeployment(); err != nil {
 		return err
 	}
@@ -116,6 +119,106 @@ func (r *Reconsiler) Sync() error {
 		return err
 	}
 	return nil
+}
+func (r *Reconsiler) updateStatus() {
+	if r.CurrentState.PrometheusOperatorDeployment != nil {
+		r.CR.Status.PrometheusOperator = r.CurrentState.PrometheusOperatorDeployment.Status
+	}
+	if r.CurrentState.ManagedPrometheus == nil {
+		r.CR.Status.Prometheus = model.NotReady
+	} else {
+		r.CR.Status.Prometheus = r.CurrentState.ManagedPrometheus.ObjectMeta.Name
+	}
+	if r.CurrentState.ManagedAlertmanager == nil {
+		r.CR.Status.Alertmanager = model.NotReady
+	} else {
+		r.CR.Status.Alertmanager = r.CurrentState.ManagedAlertmanager.ObjectMeta.Name
+	}
+	if r.CurrentState.Exporter == nil {
+		r.CR.Status.Exporter = model.NotReady
+	} else {
+		r.CR.Status.Exporter = r.CurrentState.Exporter.ObjectMeta.Name
+	}
+	r.CR.Status.Configmaps = r.cmStatus()
+	r.CR.Status.Secrets = r.secretStatus()
+	if err := r.Client.Status().Update(r.Context, r.CR); err != nil {
+		log.Error(err, "Failed to update status")
+	}
+
+}
+func (r *Reconsiler) cmStatus() string {
+	var ready []string
+	var notReady []string
+	if r.CurrentState.PromeNgCm != nil {
+		ready = append(ready, promodel.ProRouterNgCmName(r.CR))
+	} else {
+		notReady = append(notReady, promodel.ProRouterNgCmName(r.CR))
+	}
+	if r.CurrentState.RouterEntryCm != nil {
+		ready = append(ready, promodel.RouterEntryCmName(r.CR))
+	} else {
+		notReady = append(notReady, promodel.RouterEntryCmName(r.CR))
+	}
+	if r.CurrentState.ProLuaUtilsCm != nil {
+		ready = append(ready, promodel.ProLuaUtilsCmName(r.CR))
+	} else {
+		notReady = append(notReady, promodel.ProLuaUtilsCmName(r.CR))
+	}
+
+	if r.CurrentState.ProLuaCm != nil {
+		ready = append(ready, promodel.ProLuaCmName(r.CR))
+	} else {
+		notReady = append(notReady, promodel.ProLuaCmName(r.CR))
+	}
+
+	if r.CurrentState.AlertNgCm != nil {
+		ready = append(ready, promodel.AlertRouterNgCmName(r.CR))
+	} else {
+		notReady = append(notReady, promodel.AlertRouterNgCmName(r.CR))
+	}
+	readyStr := strings.Join(ready, " ")
+	if strings.TrimSpace(readyStr) == "" {
+		readyStr = promodel.None
+
+	}
+	notReadyStr := strings.Join(notReady, " ")
+	if strings.TrimSpace(notReadyStr) == "" {
+		notReadyStr = promodel.None
+
+	}
+
+	return model.Ready + ": " + readyStr + ", " + model.NotReady + ": " + notReadyStr
+}
+func (r *Reconsiler) secretStatus() string {
+	var ready []string
+	var notReady []string
+	if r.CurrentState.MonitoringSecret != nil {
+		ready = append(ready, r.CR.Spec.Certs.MonitoringSecret)
+	} else {
+		notReady = append(notReady, r.CR.Spec.Certs.MonitoringSecret)
+	}
+	if r.CurrentState.MonitoringClientSecret != nil {
+		ready = append(ready, r.CR.Spec.Certs.MonitoringClientSecret)
+	} else {
+		notReady = append(notReady, r.CR.Spec.Certs.MonitoringClientSecret)
+	}
+	if r.CurrentState.PrometheusScrapeTargetsSecret != nil {
+		ready = append(ready, promodel.ScrapeTargetsSecretName(r.CR))
+	} else {
+		notReady = append(notReady, promodel.ScrapeTargetsSecretName(r.CR))
+	}
+	readyStr := strings.Join(ready, " ")
+	if strings.TrimSpace(readyStr) == "" {
+		readyStr = promodel.None
+
+	}
+	notReadyStr := strings.Join(notReady, " ")
+	if strings.TrimSpace(notReadyStr) == "" {
+		notReadyStr = promodel.None
+
+	}
+
+	return model.Ready + ": " + readyStr + ", " + model.NotReady + ": " + notReadyStr
 }
 
 func (r *Reconsiler) createObject(obj runtime.Object) error {
