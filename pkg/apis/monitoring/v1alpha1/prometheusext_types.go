@@ -30,30 +30,69 @@ type PrometheusExtSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
-	ClusterAddress     string        `json:"clusterAddress"`
-	ClusterPort        int32         `json:"clusterPort"`
-	ClusterName        string        `json:"clusterName,omitempty"`
-	ClusterDomain      string        `json:"clusterDomain,omitempty"`
-	ImagePolicy        v1.PullPolicy `json:"imagePolicy,omitempty"`
-	ImagePullSecrets   []string      `json:"imagePullSecrets,omitempty"`
+
+	//Host value of route cp-console
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	ClusterAddress string `json:"clusterAddress"`
+	//Port value of route cp-console
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	ClusterPort int32 `json:"clusterPort"`
+	//Cluster name, mycluster by default
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	ClusterName string `json:"clusterName,omitempty"`
+	//Cluster domain name, cluster.local by default
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	ClusterDomain string `json:"clusterDomain,omitempty"`
+	// Image pull policy
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	ImagePolicy v1.PullPolicy `json:"imagePolicy,omitempty"`
+	// Extra image pull secrets
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	ImagePullSecrets []string `json:"imagePullSecrets,omitempty"`
+	//Configurations for alertmanager
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
 	AlertManagerConfig `json:"alertManagerConfig"`
-	PrometheusConfig   `json:"prometheusConfig"`
-	RouterImage        string `json:"routerImage"`
-	StorageClassName   string `json:"storageClassName"`
-	MCMMonitor         `json:"mcmMonitor,omitempty"`
-	Certs              `json:"certs"`
-	IAMProvider        `json:"iamProvider"`
-	//Grafana integrated with this CR
-	GrafanaSvcName      string `json:"grafanaSvcName"`
-	GrafanaSvcPort      int32  `json:"grafanaSvcPort"`
+	//Configurations for prometheus
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	PrometheusConfig `json:"prometheusConfig"`
+	//repo:tag for router image
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	RouterImage string `json:"routerImage"`
+	//Storage class name used by Prometheus and Alertmanager
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	StorageClassName string `json:"storageClassName"`
+	//Configurations for mcm monitor controller
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	MCMMonitor `json:"mcmMonitor,omitempty"`
+	//Configurations for tls certification
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	Certs `json:"certs"`
+	//Configurations for IAM Provider
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	IAMProvider `json:"iamProvider"`
+	//Grafana service name trusted by prometheus
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	GrafanaSvcName string `json:"grafanaSvcName"`
+	//Grafana service port truested by prometheus
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	GrafanaSvcPort int32 `json:"grafanaSvcPort"`
+	//Helm API service information
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
 	HelmReleasesMonitor `json:"helmReleasesMonitor,omitempty"`
-	PrometheusOperator  `json:"prometheusOperator,omitempty"`
+
+	PrometheusOperator `json:"prometheusOperator,omitempty"`
 }
 
 //PrometheusOperator defines inforamtion for prometheus operator deployment
 type PrometheusOperator struct {
-	Image                 string `json:"image,omitempty"`
-	ConfigmapReloadImage  string `json:"configmapReloadImage,omitempty"`
+	//Image of prometheus
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	Image string `json:"image,omitempty"`
+	//Image of configmap reloader
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
+	ConfigmapReloadImage string `json:"configmapReloadImage,omitempty"`
+	//Image of prometheus config reloader
+	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
 	PrometheusConfigImage string `json:"prometheusConfigImage,omitempty"`
 }
 
@@ -131,12 +170,24 @@ type PrometheusExtStatus struct {
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
 
+	//Status of prometheus operator deployment
+	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
 	PrometheusOperator appsv1.DeploymentStatus `json:"prometheusOperator,omitempty"`
-	Prometheus         string                  `json:"prometheus,omitempty"`
-	Alertmanager       string                  `json:"alertmanager,omitempty"`
-	Exporter           string                  `json:"exporter,omitempty"`
-	Secrets            string                  `json:"secrets,omitempty"`
-	Configmaps         string                  `json:"configmaps,omitempty"`
+	//Status of the prometheus CR, created or not
+	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
+	Prometheus string `json:"prometheus,omitempty"`
+	//Status of the alert manager CR, created or not
+	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
+	Alertmanager string `json:"alertmanager,omitempty"`
+	//Status of the exporter CR, created or not
+	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
+	Exporter string `json:"exporter,omitempty"`
+	//Status of required secrets, created or not
+	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
+	Secrets string `json:"secrets,omitempty"`
+	//Status of required configmaps, created or not
+	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
+	Configmaps string `json:"configmaps,omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -144,6 +195,7 @@ type PrometheusExtStatus struct {
 // PrometheusExt will start Prometheus and Alertmanager instances with RBAC enabled. It will also enable Multicloud monitoring
 // +kubebuilder:subresource:status
 // +kubebuilder:resource:path=prometheusexts,scope=Namespaced
+// +operator-sdk:gen-csv:customresourcedefinitions.displayName="Prometheus Operator Extension"
 type PrometheusExt struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

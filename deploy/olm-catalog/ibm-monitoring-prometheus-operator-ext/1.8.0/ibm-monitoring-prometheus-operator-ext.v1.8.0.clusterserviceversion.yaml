@@ -19,10 +19,10 @@ metadata:
               "servicePort": 9093
             },
             "certs": {
+              "autoClean": true,
               "issuer": "cs-ca-clusterissuer",
               "monitoringClientSecret": "ibm-monitoring-client-certs",
-              "monitoringSecret": "ibm-monitoring-certs",
-              "autoClean": true
+              "monitoringSecret": "ibm-monitoring-certs"
             },
             "clusterAddress": "icp-console.apps.dybo-ocp4.os.fyre.ibm.com",
             "clusterPort": 443,
@@ -54,8 +54,8 @@ metadata:
               "servicePort": 9090
             },
             "prometheusOperator": {
-              "image": "quay.io/opencloudio/prometheus-operator:v0.34-build.2",
               "configmapReloadImage": "quay.io/opencloudio/configmap-reload:v0.2.2-build.4",
+              "image": "quay.io/opencloudio/prometheus-operator:v0.34-build.2",
               "prometheusConfigImage": "quay.io/opencloudio/prometheus-config-reloader:v0.34-build.2"
             },
             "routerImage": "quay.io/opencloudio/icp-management-ingress:2.5.1",
@@ -65,47 +65,147 @@ metadata:
       ]
     capabilities: Basic Install
     categories: Monitoring
-    certified: 'false'
-    createdAt: 2020-03-25 12:00:00
-    support: IBM
-    description: Deploys Prometheus and Alertmanager instances with RBAC enabled. It will also enable Multicloud monitoring
+    certified: "false"
+    createdAt: "2020-03-25 12:00:00"
+    description: Deploys Prometheus and Alertmanager instances with RBAC enabled.
+      It will also enable Multicloud monitoring
     repository: https://github.com/IBM/ibm-monitoring-prometheus-operator-ext
+    support: IBM
   name: ibm-monitoring-prometheus-operator-ext.v1.8.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
   customresourcedefinitions:
     owned:
-    - description: Running Prometheus instance, Alertmanager instance, multiple cloud monitoring controller and default PrometheusRules
+    - description: PrometheusExt will start Prometheus and Alertmanager instances
+        with RBAC enabled. It will also enable Multicloud monitoring
+      displayName: Prometheus Operator Extension
       kind: PrometheusExt
       name: prometheusexts.monitoring.operator.ibm.com
+      resources:
+        - kind: deployments
+          version: v1
+        - kind: configmaps
+          version: v1
+        - kind: services
+          version: v1
+        - kind: prometheuses
+          version: v1
+        - kind: ingresses
+          version: v1beta1
+        - kind: certificates
+          version: v1alpha1
+        - kind: certificates
+          version: v1alpha1
+        - kind: prometheusexts
+          version: v1alpha1
+        - kind: alertmanagers
+          version: v1
+        - kind: secrets
+          version: v1
+      specDescriptors:
+      - description: Host value of route cp-console
+        displayName: Cluster Address
+        path: clusterAddress
+      - description: Cluster domain name, cluster.local by default
+        displayName: Cluster Domain
+        path: clusterDomain
+      - description: Cluster name, mycluster by default
+        displayName: Cluster Name
+        path: clusterName
+      - description: Port value of route cp-console
+        displayName: Cluster Port
+        path: clusterPort
+      - description: Image of configmap reloader
+        displayName: Configmap Reload Image
+        path: configmapReloadImage
+      - description: Grafana service name trusted by prometheus
+        displayName: Grafana Svc Name
+        path: grafanaSvcName
+      - description: Grafana service port truested by prometheus
+        displayName: Grafana Svc Port
+        path: grafanaSvcPort
+      - description: Image of prometheus
+        displayName: Image
+        path: image
+      - description: Image pull policy
+        displayName: Image Policy
+        path: imagePolicy
+      - description: Extra image pull secrets
+        displayName: Image Pull Secrets
+        path: imagePullSecrets
+      - description: Image of prometheus config reloader
+        displayName: Prometheus Config Image
+        path: prometheusConfigImage
+      - description: repo:tag for router image
+        displayName: Router Image
+        path: routerImage
+      - description: Storage class name used by Prometheus and Alertmanager
+        displayName: Storage Class Name
+        path: storageClassName
+      - description: Inforamtion for prometheus operator deployment
+        displayName: Prometheus Operator
+        path: prometheusOperator
+      - description: Helm API service information
+        displayName: Helm Releases API
+        path: helmReleasesMonitor
+      - description: Configurations for IAM Provider
+        displayName: IAM Provider
+        path: iamProvider
+      - description: Configurations for tls certification
+        displayName: Certs
+        path: certs
+      - description: Configurations for mcm monitor controller
+        displayName: MCM Monitor Controller
+        path: mcmMonitor
+      - description: Configurations for prometheus
+        displayName: Prometheus Configuration
+        path: prometheusConfig
+      - description: Configurations for alertmanager
+        displayName: Alertmanager Configuration
+        path: alertManagerConfig
+      statusDescriptors:
+      - description: Status of the alert manager CR, created or not
+        displayName: Alertmanager
+        path: alertmanager
+      - description: Status of required configmaps, created or not
+        displayName: Configmaps
+        path: configmaps
+      - description: Status of the exporter CR, created or not
+        displayName: Exporter
+        path: exporter
+      - description: Status of the prometheus CR, created or not
+        displayName: Prometheus
+        path: prometheus
+      - description: Status of prometheus operator deployment
+        displayName: Prometheus Operator
+        path: prometheusOperator
+      - description: Status of required secrets, created or not
+        displayName: Secrets
+        path: secrets
       version: v1alpha1
-      displayName: Prometheus Operator Extension
-  description: Operator deploys Prometheus and Alertmanager instances with RBAC enabled. It will also enable Multicloud monitoring
+  description: Operator deploys Prometheus and Alertmanager instances with RBAC enabled.
+    It will also enable Multicloud monitoring
   displayName: IBM Monitoring Prometheus Operator Extension
   install:
     spec:
       clusterPermissions:
       - rules:
         - apiGroups:
-          - ''
+          - ""
           resources:
-          - nodes
           - services
-          - endpoints
-          - pods
-          verbs:
-          - get
-          - list
-          - watch
-        - apiGroups:
-          - ''
-          resources:
+          - events
           - configmaps
+          - secrets
+          - pods
+          - services/finalizers
+          verbs:
+          - '*'
+        - nonResourceURLs:
+          - /metrics
           verbs:
           - get
-        serviceAccountName: prometheus-k8s
-      - rules:
         - apiGroups:
           - apiextensions.k8s.io
           resources:
@@ -113,17 +213,14 @@ spec:
           verbs:
           - '*'
         - apiGroups:
-          - monitoring.coreos.com
+          - ""
           resources:
-          - alertmanagers
-          - prometheuses
-          - prometheuses/finalizers
-          - alertmanagers/finalizers
-          - servicemonitors
-          - podmonitors
-          - prometheusrules
+          - events
+          - namespaces
           verbs:
-          - '*'
+          - get
+          - list
+          - watch
         - apiGroups:
           - apps
           resources:
@@ -131,37 +228,46 @@ spec:
           verbs:
           - '*'
         - apiGroups:
-          - ''
+          - batch
           resources:
-          - configmaps
-          - secrets
+          - jobs
           verbs:
           - '*'
         - apiGroups:
-          - ''
+          - monitoring.coreos.com
           resources:
-          - pods
+          - prometheuses
+          - alertmanagers
+          - servicemonitors
+          - prometheusrules
+          - podmonitors
+          - prometheuses/finalizers
+          - alertmanagers/finalizers
           verbs:
+          - '*'
+        - apiGroups:
+          - monitoringcontroller.cloud.ibm.com
+          resources:
+          - monitoringdashboards
+          verbs:
+          - '*'
+        - apiGroups:
+          - mcm.ibm.com
+          resources:
+          - clusterstatuses
+          verbs:
+          - get
           - list
-          - delete
+          - watch
         - apiGroups:
-          - ''
+          - security.openshift.io
+          resourceNames:
+          - privileged
           resources:
-          - services
-          - services/finalizers
-          - endpoints
+          - securitycontextconstraints
           verbs:
-          - get
-          - create
-          - update
-          - delete
-        - apiGroups:
-          - ''
-          resources:
-          - namespaces
-          verbs:
-          - get
-        serviceAccountName: prometheus-operator 
+          - use
+        serviceAccountName: ibm-monitoring-mcm-ctl
       - rules:
         - apiGroups:
           - ""
@@ -232,162 +338,6 @@ spec:
           - ""
           resources:
           - services
-          - events
-          - configmaps
-          - secrets
-          - pods
-          - services/finalizers
-          verbs:
-          - '*'
-        - nonResourceURLs:
-          - /metrics
-          verbs:
-          - get
-        - apiGroups:
-          - apiextensions.k8s.io
-          resources:
-          - customresourcedefinitions
-          verbs:
-          - '*'
-        - apiGroups:
-          - ""
-          resources:
-          - events
-          - namespaces
-          verbs:
-          - get
-          - list
-          - watch
-        - apiGroups:
-          - apps
-          resources:
-          - statefulsets
-          verbs:
-          - '*'
-        - apiGroups:
-          - batch
-          resources:
-          - jobs
-          verbs:
-          - '*'
-        - apiGroups:
-          - monitoring.coreos.com
-          resources:
-          - prometheuses
-          - alertmanagers
-          - servicemonitors
-          - prometheusrules
-          - podmonitors
-          - prometheuses/finalizers
-          - alertmanagers/finalizers
-          verbs:
-          - '*'
-        - apiGroups:
-          - monitoringcontroller.cloud.ibm.com
-          resources:
-          - monitoringdashboards
-          verbs:
-          - '*'
-        - apiGroups:
-          - mcm.ibm.com
-          resources:
-          - clusterstatuses
-          verbs:
-          - get 
-          - list
-          - watch
-        - apiGroups:
-          - security.openshift.io
-          resourceNames:
-          - privileged
-          resources:
-          - securitycontextconstraints
-          verbs:
-          - use
-        serviceAccountName: ibm-monitoring-mcm-ctl
-      - rules:
-        - apiGroups:
-          - ""
-          resources:
-          - services
-          - events
-          - configmaps
-          - secrets
-          - pods
-          - services/finalizers
-          verbs:
-          - '*'
-        - nonResourceURLs:
-          - /metrics
-          verbs:
-          - get
-        - apiGroups:
-          - apiextensions.k8s.io
-          resources:
-          - customresourcedefinitions
-          verbs:
-          - '*'
-        - apiGroups:
-          - ""
-          resources:
-          - events
-          - namespaces
-          verbs:
-          - get
-          - list
-          - watch
-        - apiGroups:
-          - apps
-          resources:
-          - statefulsets
-          verbs:
-          - '*'
-        - apiGroups:
-          - batch
-          resources:
-          - jobs
-          verbs:
-          - '*'
-        - apiGroups:
-          - monitoring.coreos.com
-          resources:
-          - prometheuses
-          - alertmanagers
-          - servicemonitors
-          - prometheusrules
-          - podmonitors
-          - prometheuses/finalizers
-          - alertmanagers/finalizers
-          verbs:
-          - '*'
-        - apiGroups:
-          - monitoringcontroller.cloud.ibm.com
-          resources:
-          - monitoringdashboards
-          verbs:
-          - '*'
-        - apiGroups:
-          - mcm.ibm.com
-          resources:
-          - clusterstatuses
-          verbs:
-          - get 
-          - list
-          - watch
-        - apiGroups:
-          - security.openshift.io
-          resourceNames:
-          - privileged
-          resources:
-          - securitycontextconstraints
-          verbs:
-          - use
-        serviceAccountName: default
-      - rules:
-        - apiGroups:
-          - ""
-          resources:
-          - services
           - nodes
           - nodes/proxy
           - endpoints
@@ -410,6 +360,82 @@ spec:
           verbs:
           - use
         serviceAccountName: ibm-monitoring-prometheusext-operand
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - nodes
+          - services
+          - endpoints
+          - pods
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          verbs:
+          - get
+        serviceAccountName: prometheus-k8s
+      - rules:
+        - apiGroups:
+          - apiextensions.k8s.io
+          resources:
+          - customresourcedefinitions
+          verbs:
+          - '*'
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - alertmanagers
+          - prometheuses
+          - prometheuses/finalizers
+          - alertmanagers/finalizers
+          - servicemonitors
+          - podmonitors
+          - prometheusrules
+          verbs:
+          - '*'
+        - apiGroups:
+          - apps
+          resources:
+          - statefulsets
+          verbs:
+          - '*'
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          - secrets
+          verbs:
+          - '*'
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          verbs:
+          - list
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - services
+          - services/finalizers
+          - endpoints
+          verbs:
+          - get
+          - create
+          - update
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - namespaces
+          verbs:
+          - get
+        serviceAccountName: prometheus-operator
       deployments:
       - name: ibm-monitoring-prometheus-operator-ext
         spec:
@@ -420,13 +446,13 @@ spec:
           strategy: {}
           template:
             metadata:
+              annotations:
+                productID: 068a62892a1e4db39641342e592daa25
+                productMetric: FREE
+                productName: IBM Cloud Platform Common Services
+                productVersion: 3.3.0
               labels:
                 name: ibm-monitoring-prometheus-operator-ext
-              annotations:
-                productName: IBM Cloud Platform Common Services
-                productID: "068a62892a1e4db39641342e592daa25"
-                productVersion: "3.3.0"
-                productMetric: FREE
             spec:
               containers:
               - command:
