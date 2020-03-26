@@ -263,6 +263,17 @@ spec:
               - nodeMemoryThreshold
               - servicePort
               type: object
+            prometheusOperator:
+              description: PrometheusOperator defines inforamtion for prometheus operator
+                deployment
+              properties:
+                configmapReloadImage:
+                  type: string
+                image:
+                  type: string
+                prometheusConfigImage:
+                  type: string
+              type: object
             routerImage:
               type: string
             storageClassName:

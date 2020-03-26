@@ -65,6 +65,7 @@ type ClusterState struct {
 	ProLuaUtilsCm                 *v1.ConfigMap
 	ProLuaCm                      *v1.ConfigMap
 	AlertNgCm                     *v1.ConfigMap
+	PrometheusOperatorDeployment  *appsv1.Deployment
 }
 
 // ReadClusterState Read objects managed by this CR from cluster
@@ -88,11 +89,17 @@ func (r *Reconsiler) ReadClusterState() error {
 	if err := r.readMCMCtlDeployment(); err != nil {
 		return err
 	}
+	if err := r.readPrometheusOperatorDeployment(); err != nil {
+		return err
+	}
 	return nil
 }
 
 // Sync makes cluster state as expected
 func (r *Reconsiler) Sync() error {
+	if err := r.syncProOperatorDeployment(); err != nil {
+		return err
+	}
 	if err := r.syncSecrets(); err != nil {
 		return err
 	}

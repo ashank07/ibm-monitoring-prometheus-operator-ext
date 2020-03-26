@@ -184,6 +184,21 @@ func (r *Reconsiler) readMCMCtlDeployment() error {
 	r.CurrentState.MCMCtrlDeployment = &deployment
 	return nil
 }
+func (r *Reconsiler) readPrometheusOperatorDeployment() error {
+	deployment := appsv1.Deployment{}
+	key := client.ObjectKey{Namespace: r.CR.Namespace, Name: model.PrometheusOperatorName(r.CR)}
+	if err := r.Client.Get(r.Context, key, &deployment); err != nil {
+		if errors.IsNotFound(err) {
+			r.CurrentState.PrometheusOperatorDeployment = nil
+			return nil
+		}
+		log.Error(err, "Failed to get prometheus operator deployment")
+		return err
+	}
+	r.CurrentState.PrometheusOperatorDeployment = &deployment
+	return nil
+}
+
 func (r *Reconsiler) readSecrets() error {
 	secret := &v1.Secret{}
 	//monitoring cert secret

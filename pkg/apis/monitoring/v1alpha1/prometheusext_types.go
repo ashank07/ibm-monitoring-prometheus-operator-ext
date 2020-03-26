@@ -46,6 +46,14 @@ type PrometheusExtSpec struct {
 	GrafanaSvcName      string `json:"grafanaSvcName"`
 	GrafanaSvcPort      int32  `json:"grafanaSvcPort"`
 	HelmReleasesMonitor `json:"helmReleasesMonitor,omitempty"`
+	PrometheusOperator  `json:"prometheusOperator,omitempty"`
+}
+
+//PrometheusOperator defines inforamtion for prometheus operator deployment
+type PrometheusOperator struct {
+	Image                 string `json:"image,omitempty"`
+	ConfigmapReloadImage  string `json:"configmapReloadImage,omitempty"`
+	PrometheusConfigImage string `json:"prometheusConfigImage,omitempty"`
 }
 
 //IAMProvider defines information for iam

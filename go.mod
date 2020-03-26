@@ -7,6 +7,7 @@ require (
 	github.com/coreos/prometheus-operator v0.34.1
 	github.com/jetstack/cert-manager v0.13.0
 	github.com/operator-framework/operator-sdk v0.15.1
+	github.com/prometheus/common v0.7.0
 	github.com/spf13/pflag v1.0.5
 	k8s.io/api v0.17.0
 	k8s.io/apimachinery v0.17.0

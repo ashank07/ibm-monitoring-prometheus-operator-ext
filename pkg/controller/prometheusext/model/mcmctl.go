@@ -28,7 +28,7 @@ import (
 	promext "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
 )
 
-var creationTime *metav1.Time = nil
+var creationTime *metav1.Time
 
 //NewMCMCtlDeployment create new deployment object for mcm controller
 func NewMCMCtlDeployment(cr *promext.PrometheusExt) (*appsv1.Deployment, error) {

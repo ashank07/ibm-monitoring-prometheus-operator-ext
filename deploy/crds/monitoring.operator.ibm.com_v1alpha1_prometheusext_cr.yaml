@@ -41,5 +41,9 @@ spec:
       idProviderSvcPort: 4300
       idManagementSvc: platform-identity-management
       idManagementSvcPort: 4500
+    prometheusOperator:
+      image: "registry.mixhub.cn/integration/prometheus-operator:v0.34-build.2"
+      configmapReloadImage: "registry.mixhub.cn/integration/configmap-reload:v0.2.2-build.4"
+      prometheusConfigImage: "registry.mixhub.cn/integration/prometheus-config-reloader:v0.34-build.2"
 
         
