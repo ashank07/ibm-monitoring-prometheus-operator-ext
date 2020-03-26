@@ -12,7 +12,7 @@ metadata:
           },
           "spec": {
             "alertManagerConfig": {
-              "imageRepo": "registry.mixhub.cn/integration/alertmanager",
+              "imageRepo": "quay.io/opencloudio/alertmanager",
               "imageTag": "v0.20.0-build.2",
               "logLevel": "info",
               "serviceAccount": "ibm-monitoring-prometheusext-operand",
@@ -38,13 +38,13 @@ metadata:
               "infra-registry-key"
             ],
             "mcmMonitor": {
-              "helpeImage": "registry.mixhub.cn/integration/icp-initcontainer:1.0.0-build.3",
-              "image": "registry.mixhub.cn/integration/prometheus-controller:v1.1.0-build.3",
+              "helpeImage": "quay.io/opencloudio/icp-initcontainer:1.0.0-build.3",
+              "image": "quay.io/opencloudio/prometheus-controller:v1.1.0-build.3",
               "isHubCluster": false,
               "serviceAccount": "ibm-monitoring-mcm-ctl"
             },
             "prometheusConfig": {
-              "imageRepo": "registry.mixhub.cn/integration/prometheus",
+              "imageRepo": "quay.io/opencloudio/prometheus",
               "imageTag": "v2.15.2-build.2",
               "logLevel": "info",
               "nodeCPUThreshold": 85,
@@ -54,11 +54,11 @@ metadata:
               "servicePort": 9090
             },
             "prometheusOperator": {
-              "image": "registry.mixhub.cn/integration/prometheus-operator:v0.34-build.2",
-              "configmapReloadImage": "registry.mixhub.cn/integration/configmap-reload:v0.2.2-build.4",
-              "prometheusConfigImage": "registry.mixhub.cn/integration/prometheus-config-reloader:v0.34-build.2"
+              "image": "quay.io/opencloudio/prometheus-operator:v0.34-build.2",
+              "configmapReloadImage": "quay.io/opencloudio/configmap-reload:v0.2.2-build.4",
+              "prometheusConfigImage": "quay.io/opencloudio/prometheus-config-reloader:v0.34-build.2"
             },
-            "routerImage": "registry.mixhub.cn/integration/icp-management-ingress:2.5.1",
+            "routerImage": "quay.io/opencloudio/icp-management-ingress:2.5.1",
             "storageClassName": "rook-ceph-block-internal"
           }
         }

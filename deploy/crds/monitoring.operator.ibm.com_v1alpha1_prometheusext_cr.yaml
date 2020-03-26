@@ -10,10 +10,10 @@ spec:
     grafanaSvcPort: 3000
     imagePullSecrets:
     - infra-registry-key
-    routerImage: registry.mixhub.cn/integration/icp-management-ingress:2.5.1
+    routerImage: quay.io/opencloudio/icp-management-ingress:2.5.1
     prometheusConfig:
       serviceAccount: ibm-monitoring-prometheusext-operand
-      imageRepo: registry.mixhub.cn/integration/prometheus
+      imageRepo: quay.io/opencloudio/prometheus
       imageTag: v2.15.2-build.2
       retention: 24h
       servicePort: 9090
@@ -22,14 +22,14 @@ spec:
       logLevel: info
     alertManagerConfig:
       serviceAccount: ibm-monitoring-prometheusext-operand
-      imageRepo: registry.mixhub.cn/integration/alertmanager
+      imageRepo: quay.io/opencloudio/alertmanager
       imageTag: v0.20.0-build.2
       servicePort: 9093
       logLevel: info
     mcmMonitor:
       isHubCluster: false
-      image: registry.mixhub.cn/integration/prometheus-controller:v1.1.0-build.3
-      helpeImage: registry.mixhub.cn/integration/icp-initcontainer:1.0.0-build.3
+      image: quay.io/opencloudio/prometheus-controller:v1.1.0-build.3
+      helpeImage: quay.io/opencloudio/icp-initcontainer:1.0.0-build.3
       serviceAccount: ibm-monitoring-mcm-ctl
     certs:
       monitoringSecret: ibm-monitoring-certs
@@ -42,8 +42,8 @@ spec:
       idManagementSvc: platform-identity-management
       idManagementSvcPort: 4500
     prometheusOperator:
-      image: "registry.mixhub.cn/integration/prometheus-operator:v0.34-build.2"
-      configmapReloadImage: "registry.mixhub.cn/integration/configmap-reload:v0.2.2-build.4"
-      prometheusConfigImage: "registry.mixhub.cn/integration/prometheus-config-reloader:v0.34-build.2"
+      image: quay.io/opencloudio/prometheus-operator:v0.34-build.2
+      configmapReloadImage: quay.io/opencloudio/configmap-reload:v0.2.2-build.4
+      prometheusConfigImage: quay.io/opencloudio/prometheus-config-reloader:v0.34-build.2
 
         
