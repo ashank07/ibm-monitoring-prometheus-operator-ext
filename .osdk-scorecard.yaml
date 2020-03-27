@@ -1,0 +1,14 @@
+scorecard:
+    # Setting a global scorecard option
+    bundle: deploy/olm-catalog/ibm-monitoring-prometheus-operator-ext
+    output: json
+    plugins:
+      # `basic` tests configured to test 2 CRs
+      - basic:
+          cr-manifest:
+            - "deploy/crds/monitoring.operator.ibm.com_v1alpha1_prometheusext_cr.yaml"
+      # `olm` tests configured to test 2 CRs
+      - olm:
+          cr-manifest:
+            - "deploy/crds/monitoring.operator.ibm.com_v1alpha1_prometheusext_cr.yaml"
+          csv-path: "deploy/olm-catalog/ibm-monitoring-prometheus-operator-ext/1.8.0/ibm-monitoring-prometheus-operator-ext.v1.8.0.clusterserviceversion.yaml"
