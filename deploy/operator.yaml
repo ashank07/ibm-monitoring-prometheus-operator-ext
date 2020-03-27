@@ -21,7 +21,7 @@ spec:
       serviceAccountName: ibm-monitoring-prometheus-operator-ext
       containers:
         - name: ibm-monitoring-prometheus-operator-ext
-          image: quay.io/opencloudio/ibm-monitoring-prometheusext-operator
+          image: quay.io/opencloudio/ibm-monitoring-prometheusext-operator:1.8.0
           command:
           - ibm-monitoring-prometheusext-operator
           imagePullPolicy: Always
