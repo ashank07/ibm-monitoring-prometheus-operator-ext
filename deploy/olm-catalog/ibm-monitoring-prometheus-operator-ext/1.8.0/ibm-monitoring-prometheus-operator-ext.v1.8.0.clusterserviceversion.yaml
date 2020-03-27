@@ -84,25 +84,19 @@ spec:
       kind: PrometheusExt
       name: prometheusexts.monitoring.operator.ibm.com
       resources:
-        - kind: deployments
+        - kind: Deployment
           version: v1
-        - kind: configmaps
+        - kind: Service
           version: v1
-        - kind: services
+        - kind: Prometheus
           version: v1
-        - kind: prometheuses
-          version: v1
-        - kind: ingresses
+        - kind: Ingress
           version: v1beta1
-        - kind: certificates
+        - kind: Certificate
           version: v1alpha1
-        - kind: certificates
+        - kind: PrometheusExt
           version: v1alpha1
-        - kind: prometheusexts
-          version: v1alpha1
-        - kind: alertmanagers
-          version: v1
-        - kind: secrets
+        - kind: Alertmanager
           version: v1
       specDescriptors:
       - description: Host value of route cp-console
