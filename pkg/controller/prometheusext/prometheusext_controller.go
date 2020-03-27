@@ -145,7 +145,7 @@ func (r *ReconcilePrometheusExt) Reconcile(request reconcile.Request) (reconcile
 	}
 	reconsiler := reconsiler.Reconsiler{
 		Client:  r.client,
-		CR:      instance,
+		CR:      instance.DeepCopy(),
 		Schema:  r.scheme,
 		Context: ctx,
 	}

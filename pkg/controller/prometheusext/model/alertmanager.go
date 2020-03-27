@@ -63,6 +63,7 @@ func AlertmanagerConfigSecret(cr *promext.PrometheusExt) *v1.Secret {
 func NewAlertmanager(cr *promext.PrometheusExt) (*promv1.Alertmanager, error) {
 	replicas := int32(1)
 	pvsize := DefaultPVSize
+	scName := cr.Annotations[StorageClassAnn]
 	if cr.Spec.AlertManagerConfig.PVSize != "" {
 		pvsize = cr.Spec.AlertManagerConfig.PVSize
 	}
@@ -97,7 +98,7 @@ func NewAlertmanager(cr *promext.PrometheusExt) (*promv1.Alertmanager, error) {
 					},
 					Spec: v1.PersistentVolumeClaimSpec{
 						AccessModes:      []v1.PersistentVolumeAccessMode{"ReadWriteOnce"},
-						StorageClassName: &cr.Spec.StorageClassName,
+						StorageClassName: &scName,
 						Resources: v1.ResourceRequirements{
 							Requests: map[v1.ResourceName]resource.Quantity{"storage": quantity},
 						},
@@ -135,6 +136,7 @@ func NewAlertmanager(cr *promext.PrometheusExt) (*promv1.Alertmanager, error) {
 
 //UpdatedAlertmanager create updated Alertmanager object
 func UpdatedAlertmanager(cr *promext.PrometheusExt, curr *promv1.Alertmanager) (*promv1.Alertmanager, error) {
+	scName := cr.Annotations[StorageClassAnn]
 	pvsize := "10Gi"
 	if cr.Spec.AlertManagerConfig.PVSize != "" {
 		pvsize = cr.Spec.AlertManagerConfig.PVSize
@@ -161,7 +163,7 @@ func UpdatedAlertmanager(cr *promext.PrometheusExt, curr *promv1.Alertmanager) (
 			},
 			Spec: v1.PersistentVolumeClaimSpec{
 				AccessModes:      []v1.PersistentVolumeAccessMode{"ReadWriteOnce"},
-				StorageClassName: &cr.Spec.StorageClassName,
+				StorageClassName: &scName,
 				Resources: v1.ResourceRequirements{
 					Requests: map[v1.ResourceName]resource.Quantity{"storage": quantity},
 				},

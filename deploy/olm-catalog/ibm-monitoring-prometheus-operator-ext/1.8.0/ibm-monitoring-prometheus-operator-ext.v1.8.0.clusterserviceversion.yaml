@@ -59,7 +59,7 @@ metadata:
               "prometheusConfigImage": "quay.io/opencloudio/prometheus-config-reloader:v0.34-build.2"
             },
             "routerImage": "quay.io/opencloudio/icp-management-ingress:2.5.1",
-            "storageClassName": "rook-ceph-block-internal"
+            "storageClassName": ""
           }
         }
       ]

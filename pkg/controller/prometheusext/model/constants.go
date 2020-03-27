@@ -17,9 +17,10 @@
 package model
 
 const (
-	None     = "None"
-	Ready    = "Ready"
-	NotReady = "NotReady"
+	None            = "None"
+	StorageClassAnn = "storage-class-name"
+	Ready           = "Ready"
+	NotReady        = "NotReady"
 	//AppLabelKey is key of label
 	AppLabelKey = "cs/app"
 	//AppLabelValue is value of label

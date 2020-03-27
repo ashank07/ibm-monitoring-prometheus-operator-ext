@@ -17,7 +17,10 @@
 package reconsiler
 
 import (
+	"fmt"
+
 	v1 "k8s.io/api/core/v1"
+	storagev1 "k8s.io/api/storage/v1"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -219,4 +222,72 @@ func (r *Reconsiler) syncRouterEntryCm() error {
 
 	}
 	return nil
+}
+func (r *Reconsiler) syncStorageClass() error {
+	scName, err := r.getStorageClass()
+	if err != nil {
+		return err
+	}
+	if r.CR.Annotations == nil {
+		r.CR.Annotations = make(map[string]string)
+
+	}
+	r.CR.Annotations[model.StorageClassAnn] = scName
+	if err := r.Client.Update(r.Context, r.CR); err != nil {
+		log.Error(err, "Failed to update storage calss annotation")
+		return err
+	}
+	return nil
+}
+
+func (r *Reconsiler) getStorageClass() (string, error) {
+	if r.CR.Spec.StorageClassName != "" {
+		return r.CR.Spec.StorageClassName, nil
+
+	}
+
+	ann, ok := r.CR.Annotations[model.StorageClassAnn]
+	if ok && ann != "" {
+		return ann, nil
+	}
+
+	scList := &storagev1.StorageClassList{}
+	err := r.Client.List(r.Context, scList)
+	if err != nil {
+		log.Error(err, "failed to get storage class list")
+		return "", err
+	}
+	if len(scList.Items) == 0 {
+		err := fmt.Errorf("could not find storage class in the cluster")
+		log.Error(err, "")
+		return "", err
+	}
+
+	var defaultSC []string
+	var nonDefaultSC []string
+
+	for _, sc := range scList.Items {
+		if sc.Provisioner == "kubernetes.io/no-provisioner" {
+			continue
+		}
+		if sc.ObjectMeta.GetAnnotations()["storageclass.kubernetes.io/is-default-class"] == "true" {
+			defaultSC = append(defaultSC, sc.GetName())
+			continue
+		}
+		nonDefaultSC = append(nonDefaultSC, sc.GetName())
+	}
+
+	if len(defaultSC) != 0 {
+		return defaultSC[0], nil
+
+	}
+
+	if len(nonDefaultSC) != 0 {
+		return nonDefaultSC[0], nil
+	}
+
+	err = fmt.Errorf("could not find dynamic provisioner storage class in the cluster")
+	log.Error(err, "")
+
+	return "", err
 }

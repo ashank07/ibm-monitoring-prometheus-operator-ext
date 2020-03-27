@@ -186,6 +186,7 @@ func PrometheusLabels(cr *promext.PrometheusExt) map[string]string {
 func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 	replicas := int32(1)
 	pvsize := DefaultPVSize
+	scName := cr.Annotations[StorageClassAnn]
 	if cr.Spec.PrometheusConfig.PVSize != "" {
 		pvsize = cr.Spec.PrometheusConfig.PVSize
 	}
@@ -230,7 +231,7 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 				},
 				Spec: v1.PersistentVolumeClaimSpec{
 					AccessModes:      []v1.PersistentVolumeAccessMode{"ReadWriteOnce"},
-					StorageClassName: &cr.Spec.StorageClassName,
+					StorageClassName: &scName,
 					Resources: v1.ResourceRequirements{
 						Requests: map[v1.ResourceName]resource.Quantity{"storage": quantity},
 					},

@@ -3,7 +3,7 @@ kind: PrometheusExt
 metadata:
   name: ibm-monitoring
 spec:
-    storageClassName: rook-ceph-block-internal
+    storageClassName: ""
     clusterAddress: "icp-console.apps.dybo-ocp4.os.fyre.ibm.com"
     clusterPort: 443
     grafanaSvcName: "ibm-monitoring-grafana"

@@ -100,6 +100,9 @@ func (r *Reconsiler) ReadClusterState() error {
 // Sync makes cluster state as expected
 func (r *Reconsiler) Sync() error {
 	r.updateStatus()
+	if err := r.syncStorageClass(); err != nil {
+		return err
+	}
 	if err := r.syncProOperatorDeployment(); err != nil {
 		return err
 	}
