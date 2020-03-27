@@ -305,6 +305,7 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 	if cr.Spec.PrometheusConfig.LogLevel != "" {
 		spec.LogLevel = cr.Spec.PrometheusConfig.LogLevel
 	}
+	spec.InitContainers = []v1.Container{*initContainer(cr)}
 
 	return spec, nil
 }
@@ -312,6 +313,20 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 //ScrapeTargetsSecretName return secret name for prometheus scrape targets
 func ScrapeTargetsSecretName(cr *promext.PrometheusExt) string {
 	return cr.Name + "-scrape-targets"
+}
+
+func initContainer(cr *promext.PrometheusExt) *v1.Container {
+	p := true
+	return &v1.Container{
+		Name:            "chmod",
+		Image:           cr.Spec.HelperImage,
+		SecurityContext: &v1.SecurityContext{Privileged: &p},
+		Command:         []string{"/bin/sh", "-c", "if [ ! -d /prometheus ];then mkdir /prometheus; fi;chmod -R 777 /prometheus"},
+		VolumeMounts: []v1.VolumeMount{{
+			Name:      "prometheus-" + ObjectName(cr, Prometheus) + "-db",
+			MountPath: "/prometheus",
+		}},
+	}
 }
 
 func scrapeTargetsFileName() string {
