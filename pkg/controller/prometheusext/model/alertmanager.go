@@ -46,6 +46,13 @@ func alertmanagerLabels(cr *promext.PrometheusExt) map[string]string {
 	return labels
 }
 
+func alertmanagerSvcSelectors(cr *promext.PrometheusExt) map[string]string {
+	selectors := make(map[string]string)
+	selectors[App] = string(Alertmanager)
+	selectors[string(Alertmanager)] = AlertmanagerName(cr)
+	return selectors
+}
+
 //AlertmanagerConfigSecret create secret object to config alertmanager
 func AlertmanagerConfigSecret(cr *promext.PrometheusExt) *v1.Secret {
 	secret := &v1.Secret{
@@ -215,7 +222,7 @@ func NewAlertmanagetSvc(cr *promext.PrometheusExt) *v1.Service {
 					Port: cr.Spec.AlertManagerConfig.ServicePort,
 				},
 			},
-			Selector: alertmanagerLabels(cr),
+			Selector: alertmanagerSvcSelectors(cr),
 			Type:     v1.ServiceTypeClusterIP,
 		},
 	}
@@ -226,7 +233,7 @@ func NewAlertmanagetSvc(cr *promext.PrometheusExt) *v1.Service {
 func UpdatedAlertmanagetSvc(cr *promext.PrometheusExt, curr *v1.Service) *v1.Service {
 	svc := curr.DeepCopy()
 	svc.Labels = alertmanagerLabels(cr)
-	svc.Spec.Selector = alertmanagerLabels(cr)
+	svc.Spec.Selector = alertmanagerSvcSelectors(cr)
 	svc.Spec.Ports[0].Port = cr.Spec.AlertManagerConfig.ServicePort
 	return svc
 }

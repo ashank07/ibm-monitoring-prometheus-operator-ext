@@ -89,7 +89,7 @@ func NewPrometheusSvc(cr *promext.PrometheusExt) *v1.Service {
 					Port: cr.Spec.PrometheusConfig.ServicePort,
 				},
 			},
-			Selector: PrometheusLabels(cr),
+			Selector: prometheusSvcSelectors(cr),
 			Type:     v1.ServiceTypeClusterIP,
 		},
 	}
@@ -101,7 +101,7 @@ func UpdatedPrometheusSvc(cr *promext.PrometheusExt, currentSvc *v1.Service) *v1
 	svc := currentSvc.DeepCopy()
 	svc.Labels = PrometheusLabels(cr)
 	svc.Spec.Ports[0].Port = cr.Spec.PrometheusConfig.ServicePort
-	svc.Spec.Selector = PrometheusLabels(cr)
+	svc.Spec.Selector = prometheusSvcSelectors(cr)
 	return svc
 }
 
@@ -181,6 +181,13 @@ func PrometheusLabels(cr *promext.PrometheusExt) map[string]string {
 		labels[key] = v
 	}
 	return labels
+}
+
+func prometheusSvcSelectors(cr *promext.PrometheusExt) map[string]string {
+	selectors := make(map[string]string)
+	selectors[App] = string(Prometheus)
+	selectors[string(Prometheus)] = PromethuesName(cr)
+	return selectors
 }
 
 func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {

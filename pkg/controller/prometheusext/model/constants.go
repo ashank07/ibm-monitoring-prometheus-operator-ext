@@ -17,6 +17,7 @@
 package model
 
 const (
+	App             = "app"
 	None            = "None"
 	StorageClassAnn = "storage-class-name"
 	Ready           = "Ready"
