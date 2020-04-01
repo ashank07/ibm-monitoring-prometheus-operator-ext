@@ -18,6 +18,7 @@ package reconsiler
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	promev1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
@@ -125,7 +126,12 @@ func (r *Reconsiler) Sync() error {
 }
 func (r *Reconsiler) updateStatus() {
 	if r.CurrentState.PrometheusOperatorDeployment != nil {
-		r.CR.Status.PrometheusOperator = r.CurrentState.PrometheusOperatorDeployment.Status
+		r.CR.Status.PrometheusOperator = fmt.Sprintf("%d desired | %d updated | %d total | %d available | %d unavailable",
+			r.CurrentState.PrometheusOperatorDeployment.Status.Replicas,
+			r.CurrentState.PrometheusOperatorDeployment.Status.UpdatedReplicas,
+			r.CurrentState.PrometheusOperatorDeployment.Status.ReadyReplicas,
+			r.CurrentState.PrometheusOperatorDeployment.Status.AvailableReplicas,
+			r.CurrentState.PrometheusOperatorDeployment.Status.UnavailableReplicas)
 	}
 	if r.CurrentState.ManagedPrometheus == nil {
 		r.CR.Status.Prometheus = model.NotReady

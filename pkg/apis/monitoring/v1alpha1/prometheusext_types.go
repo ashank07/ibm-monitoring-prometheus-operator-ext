@@ -17,7 +17,6 @@
 package v1alpha1
 
 import (
-	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -172,7 +171,7 @@ type PrometheusExtStatus struct {
 
 	//Status of prometheus operator deployment
 	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
-	PrometheusOperator appsv1.DeploymentStatus `json:"prometheusOperator,omitempty"`
+	PrometheusOperator string `json:"prometheusOperator,omitempty"`
 	//Status of the prometheus CR, created or not
 	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
 	Prometheus string `json:"prometheus,omitempty"`
