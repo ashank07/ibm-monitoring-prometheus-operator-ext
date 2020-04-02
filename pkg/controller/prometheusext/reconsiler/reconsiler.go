@@ -104,6 +104,9 @@ func (r *Reconsiler) Sync() error {
 	if err := r.syncStorageClass(); err != nil {
 		return err
 	}
+	if err := r.syncClusterHostInfo(); err != nil {
+		return err
+	}
 	if err := r.syncProOperatorDeployment(); err != nil {
 		return err
 	}

@@ -47,15 +47,15 @@ func (r *Reconsiler) syncSecret(currentSecret *v1.Secret, secretName string, dns
 				if kerrors.IsNotFound(err) {
 					//secret exists but no certicate
 					//delete the secret and create new one
-					log.Info("Deleting tls secret" + secretName + "which is old and out of control")
+					log.Info("deleting tls secret" + secretName + "which is old and out of control")
 					if err = r.Client.Delete(r.Context, currentSecret); err != nil {
-						log.Error(err, "Failed to delete old tls secret: "+secretName)
+						log.Error(err, "failed to delete old tls secret: "+secretName)
 						return err
 					}
 
 				} else {
 					//failed to get certificate because other errors
-					log.Error(err, "Failed to get certification object: "+secretName)
+					log.Error(err, "failed to get certification object: "+secretName)
 					return err
 
 				}
@@ -65,7 +65,7 @@ func (r *Reconsiler) syncSecret(currentSecret *v1.Secret, secretName string, dns
 
 		} else {
 			// when it is not autoclean keep secret no matter who created it
-			log.Info("Exporter cert secret exists")
+			log.Info("exporter cert secret exists")
 			return nil
 		}
 	}
@@ -75,7 +75,7 @@ func (r *Reconsiler) syncSecret(currentSecret *v1.Secret, secretName string, dns
 			log.Info("certificate object already exists.")
 			return model.NewRequeueError("syncCertSecret", "wait for cert secret to be created after creating certificate object")
 		}
-		log.Error(err, "Failed to create certificate")
+		log.Error(err, "failed to create certificate")
 		return err
 	}
 	// We can not verify if secret is created or not for now so return to next loop
@@ -113,7 +113,7 @@ func (r *Reconsiler) syncProRouterNgCm() error {
 			return err
 		}
 		if err = r.createObject(cm); err != nil {
-			log.Error(err, "Failed to create prometheus router nginx configmap")
+			log.Error(err, "failed to create prometheus router nginx configmap")
 			return err
 		}
 	} else {
@@ -131,13 +131,13 @@ func (r *Reconsiler) syncAlertRouterNgCm() error {
 	if r.CurrentState.AlertNgCm == nil {
 		cm := model.NewAlertmanagerRouterNgCm(r.CR)
 		if err := r.createObject(cm); err != nil {
-			log.Error(err, "Failed to create configmap for alertmanager router nginx config in cluster")
+			log.Error(err, "failed to create configmap for alertmanager router nginx config in cluster")
 			return err
 		}
 	} else {
 		cm := model.UpdatedAlertRouterNgcm(r.CR, r.CurrentState.AlertNgCm)
 		if err := r.updateObject(cm); err != nil {
-			log.Error(err, "Failed to update configmap for alertmanager router nginx config in cluster")
+			log.Error(err, "failed to update configmap for alertmanager router nginx config in cluster")
 			return err
 		}
 
@@ -149,22 +149,22 @@ func (r *Reconsiler) syncProLuaCm() error {
 		cm, err := model.NewProLuaCm(r.CR)
 
 		if err != nil {
-			log.Error(err, "Failed to create configmpa object for prometheus lua script")
+			log.Error(err, "failed to create configmpa object for prometheus lua script")
 			return err
 		}
 		if err = r.createObject(cm); err != nil {
-			log.Error(err, "Failed to create configmap in kubernetes for prometheus lua script")
+			log.Error(err, "failed to create configmap in kubernetes for prometheus lua script")
 			return err
 		}
 
 	} else {
 		cm, err := model.UpdatedProLuaCm(r.CR, r.CurrentState.ProLuaCm)
 		if err != nil {
-			log.Error(err, "Failed to update onfigmpa object for prometheus lua script")
+			log.Error(err, "failed to update onfigmpa object for prometheus lua script")
 			return err
 		}
 		if err = r.updateObject(cm); err != nil {
-			log.Error(err, "Failed to update configmap in kubernetes for prometheus lua script")
+			log.Error(err, "failed to update configmap in kubernetes for prometheus lua script")
 			return err
 		}
 
@@ -175,21 +175,21 @@ func (r *Reconsiler) syncProLuaUtilsCm() error {
 	if r.CurrentState.ProLuaUtilsCm == nil {
 		cm, err := model.NewProLuaUtilsCm(r.CR)
 		if err != nil {
-			log.Error(err, "Failed to create configmap for prometheus lua utils")
+			log.Error(err, "failed to create configmap for prometheus lua utils")
 			return err
 		}
 		if err = r.createObject(cm); err != nil {
-			log.Error(err, "Failed to create prometheus lua script configmap in kubernets")
+			log.Error(err, "failed to create prometheus lua script configmap in kubernets")
 			return err
 		}
 	} else {
 		cm, err := model.UpdatedProLuaUtilsCm(r.CR, r.CurrentState.ProLuaUtilsCm)
 		if err != nil {
-			log.Error(err, "Failed to create updated configmap for prometheus lua utils script")
+			log.Error(err, "failed to create updated configmap for prometheus lua utils script")
 			return err
 		}
 		if err = r.updateObject(cm); err != nil {
-			log.Error(err, "Failed to update configmap in kubernetes for prometheus lua utils script")
+			log.Error(err, "failed to update configmap in kubernetes for prometheus lua utils script")
 			return err
 		}
 	}
@@ -206,7 +206,7 @@ func (r *Reconsiler) syncRouterEntryCm() error {
 		}
 
 		if err = r.createObject(cm); err != nil {
-			log.Error(err, "Failed to create configmap for router entrypoint in kubernestes")
+			log.Error(err, "failed to create configmap for router entrypoint in kubernestes")
 			return err
 		}
 
@@ -216,7 +216,7 @@ func (r *Reconsiler) syncRouterEntryCm() error {
 			return err
 		}
 		if err = r.updateObject(cm); err != nil {
-			log.Error(err, "Failed to update configmap for router entrypoint in kubernestes")
+			log.Error(err, "failed to update configmap for router entrypoint in kubernestes")
 			return err
 		}
 
@@ -234,10 +234,65 @@ func (r *Reconsiler) syncStorageClass() error {
 	}
 	r.CR.Annotations[model.StorageClassAnn] = scName
 	if err := r.Client.Update(r.Context, r.CR); err != nil {
-		log.Error(err, "Failed to update storage calss annotation")
+		log.Error(err, "failed to update storage calss annotation")
 		return err
 	}
 	return nil
+}
+func (r *Reconsiler) syncClusterHostInfo() error {
+	host, port, err := r.getClusterInfo()
+	if err != nil {
+		log.Error(err, "failed to get cluster host and port")
+		return err
+	}
+	if r.CR.Annotations == nil {
+		r.CR.Annotations = make(map[string]string)
+	}
+	r.CR.Annotations[model.ClusterHostAnn] = host
+	r.CR.Annotations[model.ClusterPortAnn] = port
+	if err := r.Client.Update(r.Context, r.CR); err != nil {
+		log.Error(err, "failed to update cluster host info annotations")
+		return err
+	}
+	return nil
+}
+
+func (r *Reconsiler) getClusterInfo() (string, string, error) {
+	var host string
+	var port string
+	//check from cr spec
+	if r.CR.Spec.ClusterAddress != "" {
+		host = r.CR.Spec.ClusterAddress
+	}
+	if r.CR.Spec.ClusterPort != 0 {
+		port = fmt.Sprintf("%d", r.CR.Spec.ClusterPort)
+	} else {
+		port = model.ExternalPort
+	}
+	if host != "" {
+		return host, port, nil
+	}
+
+	//check from cr annotation
+	if host == "" {
+		ann, ok := r.CR.Annotations[model.ClusterHostAnn]
+		if ok && ann != "" {
+			host = ann
+		}
+	}
+	if host != "" {
+		return host, port, nil
+	}
+
+	//check from ingress configmap
+	key := client.ObjectKey{Namespace: r.CR.ObjectMeta.Namespace, Name: model.ManagedIngressCm}
+	cm := v1.ConfigMap{}
+	if err := r.Client.Get(r.Context, key, &cm); err != nil {
+		return host, port, err
+	}
+	host = cm.Data["MANAGEMENT_INGRESS_ROUTE_HOST"]
+
+	return host, port, nil
 }
 
 func (r *Reconsiler) getStorageClass() (string, error) {

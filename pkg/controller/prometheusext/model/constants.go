@@ -17,11 +17,14 @@
 package model
 
 const (
-	App             = "app"
-	None            = "None"
-	StorageClassAnn = "storage-class-name"
-	Ready           = "Ready"
-	NotReady        = "NotReady"
+	App              = "app"
+	None             = "None"
+	StorageClassAnn  = "storage-class-name"
+	ClusterHostAnn   = "cp-cluster-info-host"
+	ClusterPortAnn   = "cp-cluster-info-port"
+	ManagedIngressCm = "management-ingress-info"
+	Ready            = "Ready"
+	NotReady         = "NotReady"
 	//AppLabelKey is key of label
 	AppLabelKey = "cs/app"
 	//AppLabelValue is value of label
@@ -33,7 +36,7 @@ const (
 	//LoopBackIP loopback ip
 	LoopBackIP = "127.0.0.1"
 	//ExternalPort external port for alertmanager and prometheus
-	ExternalPort = "8443"
+	ExternalPort = "443"
 	//DefaultPVSize is default storage size for alertmanager and prometheus
 	DefaultPVSize = "10Gi"
 	//Prometheus means object is Prometheus

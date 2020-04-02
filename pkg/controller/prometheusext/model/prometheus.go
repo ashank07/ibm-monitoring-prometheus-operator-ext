@@ -18,7 +18,6 @@ package model
 
 import (
 	"bytes"
-	"fmt"
 	"html/template"
 	"time"
 
@@ -296,14 +295,8 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 	} else {
 		spec.EvaluationInterval = cr.Spec.PrometheusConfig.EvaluationInterval
 	}
-	externalHost := LoopBackIP
-	externalPort := ExternalPort
-	if cr.Spec.ClusterAddress != "" {
-		externalHost = cr.Spec.ClusterAddress
-	}
-	if cr.Spec.ClusterPort != 0 {
-		externalPort = fmt.Sprintf("%d", cr.Spec.ClusterPort)
-	}
+	externalHost := cr.ObjectMeta.Annotations[ClusterHostAnn]
+	externalPort := cr.ObjectMeta.Annotations[ClusterPortAnn]
 	spec.ExternalURL = "https://" + externalHost + ":" + externalPort + "/prometheus"
 	if cr.Spec.PrometheusConfig.ServiceAccountName != "" {
 		spec.ServiceAccountName = cr.Spec.PrometheusConfig.ServiceAccountName

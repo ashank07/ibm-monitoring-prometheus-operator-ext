@@ -285,8 +285,6 @@ spec:
           required:
           - alertManagerConfig
           - certs
-          - clusterAddress
-          - clusterPort
           - grafanaSvcName
           - grafanaSvcPort
           - iamProvider

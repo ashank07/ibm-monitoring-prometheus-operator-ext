@@ -17,7 +17,6 @@
 package model
 
 import (
-	"fmt"
 	"time"
 
 	promv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
@@ -122,14 +121,8 @@ func NewAlertmanager(cr *promext.PrometheusExt) (*promv1.Alertmanager, error) {
 		am.Spec.ImagePullSecrets = secrets
 
 	}
-	externalHost := LoopBackIP
-	externalPort := ExternalPort
-	if cr.Spec.ClusterAddress != "" {
-		externalHost = cr.Spec.ClusterAddress
-	}
-	if cr.Spec.ClusterPort != 0 {
-		externalPort = fmt.Sprintf("%d", cr.Spec.ClusterPort)
-	}
+	externalHost := cr.ObjectMeta.Annotations[ClusterHostAnn]
+	externalPort := cr.ObjectMeta.Annotations[ClusterPortAnn]
 	am.Spec.ExternalURL = "https://" + externalHost + ":" + externalPort + "/alertmanager"
 	if cr.Spec.AlertManagerConfig.ServiceAccountName != "" {
 		am.Spec.ServiceAccountName = cr.Spec.AlertManagerConfig.ServiceAccountName
@@ -186,14 +179,8 @@ func UpdatedAlertmanager(cr *promext.PrometheusExt, curr *promv1.Alertmanager) (
 		am.Spec.ImagePullSecrets = secrets
 
 	}
-	externalHost := LoopBackIP
-	externalPort := ExternalPort
-	if cr.Spec.ClusterAddress != "" {
-		externalHost = cr.Spec.ClusterAddress
-	}
-	if cr.Spec.ClusterPort != 0 {
-		externalPort = fmt.Sprintf("%d", cr.Spec.ClusterPort)
-	}
+	externalHost := cr.ObjectMeta.Annotations[ClusterHostAnn]
+	externalPort := cr.ObjectMeta.Annotations[ClusterPortAnn]
 	am.Spec.ExternalURL = "https://" + externalHost + ":" + externalPort + "/alertmanager"
 	if cr.Spec.AlertManagerConfig.ServiceAccountName != "" {
 		am.Spec.ServiceAccountName = cr.Spec.AlertManagerConfig.ServiceAccountName

@@ -4,10 +4,9 @@ metadata:
   name: ibm-monitoring
 spec:
     storageClassName: ""
-    clusterAddress: "icp-console.apps.dybo-ocp4.os.fyre.ibm.com"
-    clusterPort: 443
     grafanaSvcName: "ibm-monitoring-grafana"
     grafanaSvcPort: 3000
+    clusterPort: 443
     imagePullSecrets:
     - infra-registry-key
     routerImage: quay.io/opencloudio/icp-management-ingress:2.5.1

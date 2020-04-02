@@ -32,10 +32,10 @@ type PrometheusExtSpec struct {
 
 	//Host value of route cp-console
 	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
-	ClusterAddress string `json:"clusterAddress"`
+	ClusterAddress string `json:"clusterAddress,omitempty"`
 	//Port value of route cp-console
 	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
-	ClusterPort int32 `json:"clusterPort"`
+	ClusterPort int32 `json:"clusterPort,omitempty"`
 	//Cluster name, mycluster by default
 	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
 	ClusterName string `json:"clusterName,omitempty"`

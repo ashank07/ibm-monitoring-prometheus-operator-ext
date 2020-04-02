@@ -24,7 +24,6 @@ metadata:
               "monitoringClientSecret": "ibm-monitoring-client-certs",
               "monitoringSecret": "ibm-monitoring-certs"
             },
-            "clusterAddress": "icp-console.apps.dybo-ocp4.os.fyre.ibm.com",
             "clusterPort": 443,
             "grafanaSvcName": "ibm-monitoring-grafana",
             "grafanaSvcPort": 3000,
