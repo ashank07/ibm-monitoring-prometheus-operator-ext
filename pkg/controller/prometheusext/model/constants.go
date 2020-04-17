@@ -53,7 +53,7 @@ const (
 	//HealthCheckAnnKey annotation key for health check
 	HealthCheckAnnKey = "clusterhealth.ibm.com/dependencies"
 	//HealthCheckAnnValue annotation value for health check
-	HealthCheckAnnValue = "cert-manager, icp-management-ingress, auth-idp"
+	HealthCheckAnnValue = "cert-manager, icp-management-ingress, auth-idp, common-web-ui, platform-header"
 
 	defaultHelmPort      = int32(3000)
 	defaultClusterDomain = "cluster.local"
