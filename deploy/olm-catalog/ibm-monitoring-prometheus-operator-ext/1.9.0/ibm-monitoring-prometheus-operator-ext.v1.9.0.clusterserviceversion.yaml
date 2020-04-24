@@ -103,7 +103,7 @@ metadata:
     repository: https://github.com/IBM/ibm-monitoring-prometheus-operator-ext
     containerImage: quay.io/opencloudio/ibm-monitoring-prometheusext-operator
     support: IBM
-  name: ibm-monitoring-prometheus-operator-ext.v1.8.1
+  name: ibm-monitoring-prometheus-operator-ext.v1.9.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -529,4 +529,4 @@ spec:
   provider:
     name: IBM
   replaces: ibm-monitoring-prometheus-operator-ext.v1.8.0
-  version: 1.8.1
+  version: 1.9.0
