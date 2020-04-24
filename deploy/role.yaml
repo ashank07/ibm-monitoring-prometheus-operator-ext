@@ -1,6 +1,10 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    app.kubernetes.io/name: ibm-monitoring
+    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   creationTimestamp: null
   name: ibm-monitoring-prometheus-operator-ext
 rules:
@@ -71,6 +75,10 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    app.kubernetes.io/name: ibm-monitoring
+    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   creationTimestamp: null
   name: ibm-monitoring-mcm-ctl
 rules:
@@ -153,6 +161,10 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    app.kubernetes.io/name: ibm-monitoring
+    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   creationTimestamp: null
   name: ibm-monitoring-prometheusext-operand
 rules:
@@ -184,6 +196,10 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    app.kubernetes.io/name: ibm-monitoring
+    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   creationTimestamp: null
   name: prometheus-k8s-role
 rules:
@@ -208,6 +224,10 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    app.kubernetes.io/name: ibm-monitoring
+    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   creationTimestamp: null
   name: prometheus-operator-role
 rules:
