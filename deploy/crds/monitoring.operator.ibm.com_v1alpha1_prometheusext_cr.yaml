@@ -1,13 +1,16 @@
 apiVersion: monitoring.operator.ibm.com/v1alpha1
 kind: PrometheusExt
 metadata:
+  labels:
+    app.kubernetes.io/name: ibm-monitoring
+    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   name: ibm-monitoring
 spec:
     storageClassName: ""
-    clusterAddress: "icp-console.apps.dybo-ocp4.os.fyre.ibm.com"
-    clusterPort: 443
     grafanaSvcName: "ibm-monitoring-grafana"
     grafanaSvcPort: 3000
+    clusterPort: 443
     imagePullSecrets:
     - infra-registry-key
     routerImage: quay.io/opencloudio/icp-management-ingress:2.5.1

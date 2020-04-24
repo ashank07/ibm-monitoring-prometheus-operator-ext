@@ -28,7 +28,6 @@ metadata:
               "monitoringClientSecret": "ibm-monitoring-client-certs",
               "monitoringSecret": "ibm-monitoring-certs"
             },
-            "clusterAddress": "icp-console.apps.dybo-ocp4.os.fyre.ibm.com",
             "clusterPort": 443,
             "grafanaSvcName": "ibm-monitoring-grafana",
             "grafanaSvcPort": 3000,
@@ -65,6 +64,34 @@ metadata:
             "routerImage": "quay.io/opencloudio/icp-management-ingress:2.5.1",
             "storageClassName": ""
           }
+        },
+        {
+          "apiVersion":"operator.ibm.com/v1alpha1",
+          "kind":"OperandRequest",
+          "metadata":{
+            "name":"monitoring-prometheus-ext-operator-request"
+          },
+          "spec":{
+            "requests":[
+              {
+                "operands":[
+                  {
+                    "name":"ibm-cert-manager-operator"
+                  },
+                  {
+                    "name": "ibm-iam-operator"
+                  },
+                  {
+                    "name": "ibm-management-ingress-operator"
+                  },
+                  {
+                    "name": "ibm-commonui-operator"
+                  }
+                ],
+                "registry":"common-service"
+              }
+            ]
+          }
         }
       ]
     capabilities: Basic Install
@@ -74,9 +101,9 @@ metadata:
     description: Deploys Prometheus and Alertmanager instances with RBAC enabled.
       It will also enable Multicloud monitoring
     repository: https://github.com/IBM/ibm-monitoring-prometheus-operator-ext
-    containerImage: quay.io/opencloudio/ibm-monitoring-prometheusext-operator:1.8.0
+    containerImage: quay.io/opencloudio/ibm-monitoring-prometheusext-operator
     support: IBM
-  name: ibm-monitoring-prometheus-operator-ext.v1.8.0
+  name: ibm-monitoring-prometheus-operator-ext.v1.8.1
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -470,7 +497,7 @@ spec:
                       fieldPath: metadata.name
                 - name: OPERATOR_NAME
                   value: ibm-monitoring-prometheusext-operator
-                image: quay.io/opencloudio/ibm-monitoring-prometheusext-operator:1.8.0
+                image: quay.io/opencloudio/ibm-monitoring-prometheusext-operator
                 imagePullPolicy: Always
                 name: ibm-monitoring-prometheus-operator-ext
                 resources: {}
@@ -501,5 +528,5 @@ spec:
     url: https://www.prometheus.io/
   provider:
     name: IBM
-  #replaces: ibm-monitoring-prometheus-operator-ext.v0.0.0
-  version: 1.8.0
+  replaces: ibm-monitoring-prometheus-operator-ext.v1.8.0
+  version: 1.8.1
