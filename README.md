@@ -23,6 +23,11 @@ This operator is part of IBM Common Services. You can use OLM or ODLM to install
 - IBM IAM service for RBAC
 For the details, please refer to the CRD.
 
+## SecurityContextConstraints Requirements
+
+- privileged SCC for operands
+- restricted SCC for operator
+
 ## Documentation
 
 For installation and configuration, see [IBM Knowledge Center link](http://ibm.biz/cpcsdocs).
