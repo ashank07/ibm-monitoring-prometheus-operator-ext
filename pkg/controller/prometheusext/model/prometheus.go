@@ -206,8 +206,6 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 			Annotations:       commonPodAnnotations(),
 			CreationTimestamp: metav1.Time{Time: time.Now()},
 		},
-		BaseImage:      cr.Spec.PrometheusConfig.ImageRepo,
-		Version:        cr.Spec.PrometheusConfig.ImageTag,
 		Replicas:       &replicas,
 		EnableAdminAPI: true,
 		Resources:      cr.Spec.PrometheusConfig.Resources,
@@ -306,6 +304,19 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 		spec.LogLevel = cr.Spec.PrometheusConfig.LogLevel
 	}
 	spec.InitContainers = []v1.Container{*initContainer(cr)}
+
+	if cr.Spec.PrometheusConfig.ImageTag != "" {
+		spec.Tag = cr.Spec.PrometheusConfig.ImageTag
+	}
+	if cr.Spec.PrometheusConfig.ImageSHA != "" {
+		spec.SHA = cr.Spec.PrometheusConfig.ImageSHA
+	}
+	if cr.Spec.PrometheusConfig.Image != "" {
+		spec.Image = &cr.Spec.PrometheusConfig.Image
+	}
+	if cr.Spec.PrometheusConfig.ImageRepo != "" {
+		spec.BaseImage = cr.Spec.PrometheusConfig.ImageRepo
+	}
 
 	return spec, nil
 }
