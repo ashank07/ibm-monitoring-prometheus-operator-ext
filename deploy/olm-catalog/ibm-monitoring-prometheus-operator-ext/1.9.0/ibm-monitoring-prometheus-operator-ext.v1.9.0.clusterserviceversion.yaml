@@ -37,9 +37,6 @@ metadata:
               "idProviderSvc": "platform-identity-provider",
               "idProviderSvcPort": 4300
             },
-            "imagePullSecrets": [
-              "infra-registry-key"
-            ],
             "mcmMonitor": {
               "helpeImage": "quay.io/opencloudio/icp-initcontainer:1.0.0-build.3",
               "image": "quay.io/opencloudio/prometheus-controller:v1.1.0-build.3",
