@@ -11,8 +11,6 @@ spec:
     grafanaSvcName: "ibm-monitoring-grafana"
     grafanaSvcPort: 3000
     clusterPort: 443
-    imagePullSecrets:
-    - infra-registry-key
     routerImage: quay.io/opencloudio/icp-management-ingress:2.5.1
     prometheusConfig:
       serviceAccount: ibm-monitoring-prometheusext-operand
