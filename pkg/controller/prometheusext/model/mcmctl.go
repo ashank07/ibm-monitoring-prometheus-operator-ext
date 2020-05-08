@@ -19,6 +19,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -159,7 +160,7 @@ func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 
 	container := &v1.Container{
 		Name:            "mcm",
-		Image:           cr.Spec.MCMMonitor.Image,
+		Image:           *imageName(os.Getenv(mcmImageEnv), cr.Spec.MCMMonitor.Image),
 		ImagePullPolicy: cr.Spec.ImagePolicy,
 		SecurityContext: &v1.SecurityContext{
 			AllowPrivilegeEscalation: &pe,

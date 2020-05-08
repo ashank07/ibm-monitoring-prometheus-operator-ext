@@ -19,6 +19,7 @@ package model
 import (
 	"bytes"
 	"fmt"
+	"os"
 
 	"html/template"
 
@@ -368,7 +369,7 @@ func NewRouterContainer(cr *promext.PrometheusExt, ot ObjectType) *v1.Container 
 
 	container := &v1.Container{
 		Name:            "router",
-		Image:           cr.Spec.RouterImage,
+		Image:           *imageName(os.Getenv(routerImageEnv), cr.Spec.RouterImage),
 		ImagePullPolicy: cr.Spec.ImagePolicy,
 		SecurityContext: &v1.SecurityContext{
 			AllowPrivilegeEscalation: &pe,

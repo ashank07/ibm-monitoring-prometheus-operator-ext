@@ -24,7 +24,6 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	exportersv1alpha1 "github.com/IBM/ibm-monitoring-exporters-operator/pkg/apis/monitoring/v1alpha1"
 	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 )
 
@@ -149,25 +148,6 @@ func (r *Reconsiler) readAlertmanager() error {
 	}
 
 	return nil
-}
-func (r *Reconsiler) readExporter() error {
-	exporters := exportersv1alpha1.ExporterList{}
-	if err := r.Client.List(r.Context, &exporters); err != nil {
-		if errors.IsNotFound(err) {
-			r.CurrentState.Exporter = nil
-			return nil
-		}
-		log.Error(err, "Failed to list exporters")
-		return err
-	}
-	if len(exporters.Items) == 0 {
-		r.CurrentState.Exporter = nil
-		return nil
-	}
-	// We assume there is only or exporter CR
-	r.CurrentState.Exporter = &(exporters.Items[0])
-	return nil
-
 }
 
 func (r *Reconsiler) readMCMCtlDeployment() error {

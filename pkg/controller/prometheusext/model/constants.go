@@ -59,6 +59,17 @@ const (
 	defaultClusterDomain = "cluster.local"
 	defaultClusterName   = "mycluster"
 
+	amImageEnv        = "AM_IMAGE"
+	promeImageEnv     = "PROME_IMAGE"
+	cmReloadImageEnv  = "CM_RELOAD_IMAGE"
+	promeOPImageEnv   = "PROM_OP_IMAGE"
+	promeConfImageEnv = "PROM_CONF_IMAGE"
+	routerImageEnv    = "ROUTER_IMAGE"
+	helperImageEnv    = "MCM_HELPER_IMAGE"
+	mcmImageEnv       = "MCM_IMAGE"
+
+	imageDigestKey = `sha256:`
+
 	alertConfigStr = `  
   global:
   receivers:

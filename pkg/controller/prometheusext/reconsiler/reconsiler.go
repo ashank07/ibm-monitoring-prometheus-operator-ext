@@ -18,7 +18,6 @@ package reconsiler
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	promev1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
@@ -33,9 +32,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 
-	exportersv1alpha1 "github.com/IBM/ibm-monitoring-exporters-operator/pkg/apis/monitoring/v1alpha1"
-	"github.com/IBM/ibm-monitoring-exporters-operator/pkg/controller/exporter/model"
 	monitoringv1alpha1 "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
+	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 	promodel "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 )
 
@@ -59,7 +57,6 @@ type ClusterState struct {
 	PromeIngress                  *ev1beta1.Ingress
 	AlertmanagerSvc               *v1.Service
 	AlertManagerIngress           *ev1beta1.Ingress
-	Exporter                      *exportersv1alpha1.Exporter
 	MonitoringSecret              *v1.Secret
 	MonitoringClientSecret        *v1.Secret
 	PrometheusScrapeTargetsSecret *v1.Secret
@@ -78,9 +75,6 @@ func (r *Reconsiler) ReadClusterState() error {
 		return err
 	}
 	if err := r.readRouterCms(); err != nil {
-		return err
-	}
-	if err := r.readExporter(); err != nil {
 		return err
 	}
 	if err := r.readPrometheus(); err != nil {
@@ -129,12 +123,7 @@ func (r *Reconsiler) Sync() error {
 }
 func (r *Reconsiler) updateStatus() {
 	if r.CurrentState.PrometheusOperatorDeployment != nil {
-		r.CR.Status.PrometheusOperator = fmt.Sprintf("%d desired | %d updated | %d total | %d available | %d unavailable",
-			r.CurrentState.PrometheusOperatorDeployment.Status.Replicas,
-			r.CurrentState.PrometheusOperatorDeployment.Status.UpdatedReplicas,
-			r.CurrentState.PrometheusOperatorDeployment.Status.ReadyReplicas,
-			r.CurrentState.PrometheusOperatorDeployment.Status.AvailableReplicas,
-			r.CurrentState.PrometheusOperatorDeployment.Status.UnavailableReplicas)
+		r.CR.Status.PrometheusOperator = r.CurrentState.PrometheusOperatorDeployment.Status
 	}
 	if r.CurrentState.ManagedPrometheus == nil {
 		r.CR.Status.Prometheus = model.NotReady
@@ -146,11 +135,9 @@ func (r *Reconsiler) updateStatus() {
 	} else {
 		r.CR.Status.Alertmanager = r.CurrentState.ManagedAlertmanager.ObjectMeta.Name
 	}
-	if r.CurrentState.Exporter == nil {
-		r.CR.Status.Exporter = model.NotReady
-	} else {
-		r.CR.Status.Exporter = r.CurrentState.Exporter.ObjectMeta.Name
-	}
+
+	r.CR.Status.Exporter = ""
+
 	r.CR.Status.Configmaps = r.cmStatus()
 	r.CR.Status.Secrets = r.secretStatus()
 	if err := r.Client.Status().Update(r.Context, r.CR); err != nil {

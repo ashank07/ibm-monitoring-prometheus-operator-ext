@@ -11,11 +11,8 @@ spec:
     grafanaSvcName: "ibm-monitoring-grafana"
     grafanaSvcPort: 3000
     clusterPort: 443
-    routerImage: quay.io/opencloudio/icp-management-ingress:2.5.1
     prometheusConfig:
       serviceAccount: ibm-monitoring-prometheusext-operand
-      imageRepo: quay.io/opencloudio/prometheus
-      imageTag: v2.15.2-build.2
       retention: 24h
       servicePort: 9090
       nodeMemoryThreshold: 85
@@ -23,14 +20,10 @@ spec:
       logLevel: info
     alertManagerConfig:
       serviceAccount: ibm-monitoring-prometheusext-operand
-      imageRepo: quay.io/opencloudio/alertmanager
-      imageTag: v0.20.0-build.2
       servicePort: 9093
       logLevel: info
     mcmMonitor:
       isHubCluster: false
-      image: quay.io/opencloudio/prometheus-controller:v1.1.0-build.3
-      helpeImage: quay.io/opencloudio/icp-initcontainer:1.0.0-build.3
       serviceAccount: ibm-monitoring-mcm-ctl
     certs:
       monitoringSecret: ibm-monitoring-certs
@@ -42,9 +35,6 @@ spec:
       idProviderSvcPort: 4300
       idManagementSvc: platform-identity-management
       idManagementSvcPort: 4500
-    prometheusOperator:
-      image: quay.io/opencloudio/prometheus-operator:v0.34-build.2
-      configmapReloadImage: quay.io/opencloudio/configmap-reload:v0.2.2-build.4
-      prometheusConfigImage: quay.io/opencloudio/prometheus-config-reloader:v0.34-build.2
+    prometheusOperator: {}
 
         

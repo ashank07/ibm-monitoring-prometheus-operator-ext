@@ -17,6 +17,8 @@
 package model
 
 import (
+	"strings"
+
 	promev1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
 
 	monitoringv1alpha1 "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
@@ -29,6 +31,15 @@ type ObjectType string
 func ManagedLabel(cr *monitoringv1alpha1.PrometheusExt) map[string]string {
 	return map[string]string{managedLabelKey(): managedLabelValue(cr)}
 
+}
+func imageName(defaultV string, overwrite string) *string {
+	var image string
+	if strings.Contains(overwrite, imageDigestKey) {
+		image = overwrite
+	} else {
+		image = defaultV
+	}
+	return &image
 }
 
 //ObjectName returns name related to current cr

@@ -17,6 +17,8 @@
 package model
 
 import (
+	"os"
+
 	"github.com/prometheus/common/log"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -108,14 +110,14 @@ func prometneusOperatorContainer(cr *promext.PrometheusExt) *v1.Container {
 
 	container := &v1.Container{
 		Name:            "prometheus-operator",
-		Image:           cr.Spec.PrometheusOperator.Image,
+		Image:           *imageName(os.Getenv(promeOPImageEnv), cr.Spec.PrometheusOperator.Image),
 		ImagePullPolicy: cr.Spec.ImagePolicy,
 		Args: []string{
 			"-namespaces=" + cr.Namespace,
 			"-manage-crds=false",
 			"-logtostderr=true",
-			"--config-reloader-image=" + cr.Spec.PrometheusOperator.ConfigmapReloadImage,
-			"--prometheus-config-reloader=" + cr.Spec.PrometheusConfigImage,
+			"--config-reloader-image=" + *imageName(os.Getenv(cmReloadImageEnv), cr.Spec.PrometheusOperator.ConfigmapReloadImage),
+			"--prometheus-config-reloader=" + *imageName(os.Getenv(promeConfImageEnv), cr.Spec.PrometheusConfigImage),
 		},
 		Env: []v1.EnvVar{
 			{

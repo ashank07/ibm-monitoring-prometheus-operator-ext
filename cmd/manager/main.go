@@ -47,8 +47,6 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
-
-	exportersapis "github.com/IBM/ibm-monitoring-exporters-operator/pkg/apis"
 )
 
 // Change below variables to serve metrics on different host or port.
@@ -131,11 +129,6 @@ func main() {
 	// Register Prometheus operator schemas for watching
 	if err := promev1.AddToScheme(mgr.GetScheme()); err != nil {
 		log.Error(err, "Failed to register schemas of Prometheus operator")
-		os.Exit(1)
-	}
-	// Register Prometheus exporters operator schemas for watching
-	if err := exportersapis.AddToScheme(mgr.GetScheme()); err != nil {
-		log.Error(err, "Failed to register schemas of Prometheus exporters operator")
 		os.Exit(1)
 	}
 

@@ -32,7 +32,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
-	exportersv1alpha1 "github.com/IBM/ibm-monitoring-exporters-operator/pkg/apis/monitoring/v1alpha1"
 	monitoringv1alpha1 "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
 	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/reconsiler"
@@ -97,13 +96,6 @@ func add(mgr manager.Manager, r reconcile.Reconciler) error {
 	if err != nil {
 		return err
 	}
-
-	// Watch for changes to Exporter object for scrape configuration no matter if it is created by us or not
-	err = c.Watch(&source.Kind{Type: &exportersv1alpha1.Exporter{}}, &handler.EnqueueRequestForObject{})
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 

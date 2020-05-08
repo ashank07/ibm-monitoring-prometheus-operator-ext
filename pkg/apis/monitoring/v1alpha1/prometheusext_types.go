@@ -17,6 +17,7 @@
 package v1alpha1
 
 import (
+	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -56,7 +57,7 @@ type PrometheusExtSpec struct {
 	PrometheusConfig `json:"prometheusConfig"`
 	//repo:tag for router image
 	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
-	RouterImage string `json:"routerImage"`
+	RouterImage string `json:"routerImage,omitempty"`
 	//Storage class name used by Prometheus and Alertmanager
 	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
 	StorageClassName string `json:"storageClassName"`
@@ -113,10 +114,8 @@ type HelmReleasesMonitor struct {
 // PrometheusConfig defines configuration of Prometheus object
 type PrometheusConfig struct {
 	ServiceAccountName  string                  `json:"serviceAccount,omitempty"`
-	Image               string                  `json:"image,omitempty"`
 	ImageRepo           string                  `json:"imageRepo,omitempty"`
 	ImageTag            string                  `json:"imageTag,omitempty"`
-	ImageSHA            string                  `json:"imageSHA,omitempty"`
 	Retention           string                  `json:"retention,omitempty"`
 	ScrapeInterval      string                  `json:"scrapeInterval,omitempty"`
 	EvaluationInterval  string                  `json:"evaluationInterval,omitempty"`
@@ -132,10 +131,8 @@ type PrometheusConfig struct {
 // AlertManagerConfig defines configuration of AlertManager object
 type AlertManagerConfig struct {
 	ServiceAccountName string                  `json:"serviceAccount,omitempty"`
-	Image              string                  `json:"image,omitempty"`
 	ImageRepo          string                  `json:"imageRepo,omitempty"`
 	ImageTag           string                  `json:"imageTag,omitempty"`
-	ImageSHA           string                  `json:"imageSHA,omitempty"`
 	PVSize             string                  `json:"pvSize,omitempty"`
 	ServicePort        int32                   `json:"servicePort"`
 	Resources          v1.ResourceRequirements `json:"resource,omitempty"`
@@ -175,7 +172,7 @@ type PrometheusExtStatus struct {
 
 	//Status of prometheus operator deployment
 	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
-	PrometheusOperator string `json:"prometheusOperator,omitempty"`
+	PrometheusOperator appsv1.DeploymentStatus `json:"prometheusOperator,omitempty"`
 	//Status of the prometheus CR, created or not
 	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
 	Prometheus string `json:"prometheus,omitempty"`

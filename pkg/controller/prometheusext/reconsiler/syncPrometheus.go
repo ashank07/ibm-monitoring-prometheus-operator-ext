@@ -28,7 +28,7 @@ import (
 func (r *Reconsiler) syncPrometheus() error {
 	//scrape targets secret
 	if r.CurrentState.PrometheusScrapeTargetsSecret == nil {
-		secret, err := model.NewScrapeTargetsSecret(r.CR, r.CurrentState.Exporter)
+		secret, err := model.NewScrapeTargetsSecret(r.CR)
 		if err != nil {
 			log.Error(err, "Faild to create secret object for prometheus scrape target")
 			return err
@@ -39,7 +39,7 @@ func (r *Reconsiler) syncPrometheus() error {
 		}
 
 	} else {
-		secret, err := model.UpdatedScrapeTargetsSecret(r.CR, r.CurrentState.Exporter, r.CurrentState.PrometheusScrapeTargetsSecret)
+		secret, err := model.UpdatedScrapeTargetsSecret(r.CR, r.CurrentState.PrometheusScrapeTargetsSecret)
 		if err != nil {
 			return err
 		}

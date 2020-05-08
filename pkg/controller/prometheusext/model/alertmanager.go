@@ -17,6 +17,7 @@
 package model
 
 import (
+	"os"
 	"time"
 
 	promv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
@@ -132,17 +133,17 @@ func NewAlertmanager(cr *promext.PrometheusExt) (*promv1.Alertmanager, error) {
 	if cr.Spec.AlertManagerConfig.ImageTag != "" {
 		am.Spec.Tag = cr.Spec.AlertManagerConfig.ImageTag
 	}
-	if cr.Spec.AlertManagerConfig.ImageSHA != "" {
-		am.Spec.SHA = cr.Spec.AlertManagerConfig.ImageSHA
-	}
-	if cr.Spec.AlertManagerConfig.Image != "" {
-		am.Spec.Image = &cr.Spec.AlertManagerConfig.Image
-	}
+	am.Spec.Image = alertManagerImage(cr)
+
 	if cr.Spec.AlertManagerConfig.ImageRepo != "" {
 		am.Spec.BaseImage = cr.Spec.AlertManagerConfig.ImageRepo
 	}
 
 	return am, nil
+}
+
+func alertManagerImage(cr *promext.PrometheusExt) *string {
+	return imageName(os.Getenv(amImageEnv), cr.Spec.AlertManagerConfig.ImageRepo)
 }
 
 //UpdatedAlertmanager create updated Alertmanager object
@@ -164,15 +165,7 @@ func UpdatedAlertmanager(cr *promext.PrometheusExt, curr *promv1.Alertmanager) (
 	if cr.Spec.AlertManagerConfig.ImageTag != "" {
 		am.Spec.Tag = cr.Spec.AlertManagerConfig.ImageTag
 	}
-	if cr.Spec.AlertManagerConfig.ImageSHA != "" {
-		am.Spec.SHA = cr.Spec.AlertManagerConfig.ImageSHA
-	}
-	if cr.Spec.AlertManagerConfig.Image != "" {
-		am.Spec.Image = &cr.Spec.AlertManagerConfig.Image
-	}
-	if cr.Spec.AlertManagerConfig.ImageRepo != "" {
-		am.Spec.BaseImage = cr.Spec.AlertManagerConfig.ImageRepo
-	}
+	am.Spec.Image = alertManagerImage(cr)
 	am.Spec.Resources = cr.Spec.AlertManagerConfig.Resources
 	am.Spec.Secrets = []string{cr.Spec.Certs.MonitoringSecret, cr.Spec.Certs.MonitoringClientSecret}
 	am.Spec.ConfigMaps = []string{RouterEntryCmName(cr), AlertRouterNgCmName(cr)}
