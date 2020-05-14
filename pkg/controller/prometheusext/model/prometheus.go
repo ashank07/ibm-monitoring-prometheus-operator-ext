@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"html/template"
 	"os"
+	"reflect"
 	"time"
 
 	promv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
@@ -191,6 +192,17 @@ func prometheusSvcSelectors(cr *promext.PrometheusExt) map[string]string {
 func promeImage(cr *promext.PrometheusExt) *string {
 	return imageName(os.Getenv(promeImageEnv), cr.Spec.PrometheusConfig.ImageRepo)
 }
+
+func prometheusDefaultResources() v1.ResourceRequirements {
+	mem, _ := resource.ParseQuantity("1Gi")
+	cpu, _ := resource.ParseQuantity("200m")
+	return v1.ResourceRequirements{
+		Requests: v1.ResourceList{
+			v1.ResourceMemory: mem,
+			v1.ResourceCPU:    cpu,
+		},
+	}
+}
 func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 	replicas := int32(1)
 	pvsize := DefaultPVSize
@@ -260,8 +272,8 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 			},
 		},
 	}
-	//Select all rules in current namespace but those for multicloud monitoring
-	//spec.RuleNamespaceSelector = &metav1.LabelSelector{}
+	//Select all rules in all namespaces but those for multicloud monitoring
+	spec.RuleNamespaceSelector = &metav1.LabelSelector{}
 	spec.RuleSelector = &metav1.LabelSelector{
 		MatchExpressions: []metav1.LabelSelectorRequirement{
 			{
@@ -309,6 +321,9 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 
 	if cr.Spec.PrometheusConfig.ImageTag != "" {
 		spec.Tag = cr.Spec.PrometheusConfig.ImageTag
+	}
+	if reflect.DeepEqual(spec.Resources, v1.ResourceRequirements{}) {
+		spec.Resources = prometheusDefaultResources()
 	}
 
 	spec.Image = promeImage(cr)
