@@ -3,7 +3,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   labels:
     app.kubernetes.io/name: ibm-monitoring
-    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/instance: common-monitoring
     app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   name: ibm-monitoring-prometheus-operator-ext
 subjects:
@@ -20,7 +20,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   labels:
     app.kubernetes.io/name: ibm-monitoring
-    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/instance: common-monitoring
     app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   name: ibm-monitoring-mcm-ctl
 subjects:
@@ -41,7 +41,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   labels:
     app.kubernetes.io/name: ibm-monitoring
-    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/instance: common-monitoring
     app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   name: ibm-monitoring-prometheusext-operand
 subjects:
@@ -58,7 +58,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   labels:
     app.kubernetes.io/name: ibm-monitoring
-    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/instance: common-monitoring
     app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   name: prometheus-k8s-rb
 subjects:
@@ -75,7 +75,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   labels:
     app.kubernetes.io/name: ibm-monitoring
-    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/instance: common-monitoring
     app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   name: prometheus-operator-rb
 subjects:

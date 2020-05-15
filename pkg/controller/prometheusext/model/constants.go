@@ -46,10 +46,6 @@ const (
 	//Grafana means object is grafana. It is only for certification dnsNames here
 	Grafana = ObjectType("grafana")
 
-	//HealthCheckKey lable key for health check
-	HealthCheckKey = "app.kubernetes.io/instance"
-	//HealthCheckLabelValue label value for health check
-	HealthCheckLabelValue = "common-monitoring"
 	//HealthCheckAnnKey annotation key for health check
 	HealthCheckAnnKey = "clusterhealth.ibm.com/dependencies"
 	//HealthCheckAnnValue annotation value for health check

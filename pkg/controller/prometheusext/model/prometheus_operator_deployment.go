@@ -170,8 +170,8 @@ func proOperatorLabels(cr *promext.PrometheusExt) map[string]string {
 	labels := make(map[string]string)
 	labels[AppLabelKey] = AppLabelValue
 	labels[Component] = "prometheus-operator"
-	labels[HealthCheckKey] = HealthCheckLabelValue
 	labels[managedLabelKey()] = managedLabelValue(cr)
+	labels = appendCommonLabels(labels)
 	for key, v := range cr.Labels {
 		labels[key] = v
 	}

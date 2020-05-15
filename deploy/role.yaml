@@ -3,7 +3,7 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: ibm-monitoring
-    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/instance: common-monitoring
     app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   creationTimestamp: null
   name: ibm-monitoring-prometheus-operator-ext
@@ -77,7 +77,7 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: ibm-monitoring
-    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/instance: common-monitoring
     app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   creationTimestamp: null
   name: ibm-monitoring-mcm-ctl
@@ -163,7 +163,7 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: ibm-monitoring
-    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/instance: common-monitoring
     app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   creationTimestamp: null
   name: ibm-monitoring-prometheusext-operand
@@ -198,7 +198,7 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: ibm-monitoring
-    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/instance: common-monitoring
     app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   creationTimestamp: null
   name: prometheus-k8s-role
@@ -226,7 +226,7 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: ibm-monitoring
-    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/instance: common-monitoring
     app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   creationTimestamp: null
   name: prometheus-operator-role

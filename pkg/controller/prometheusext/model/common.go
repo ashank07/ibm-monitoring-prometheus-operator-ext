@@ -41,6 +41,12 @@ func imageName(defaultV string, overwrite string) *string {
 	}
 	return &image
 }
+func appendCommonLabels(labels map[string]string) map[string]string {
+	labels["app.kubernetes.io/name"] = "ibm-monitoring"
+	labels["app.kubernetes.io/instance"] = "common-monitoring"
+	labels["app.kubernetes.io/managed-by"] = "ibm-monitoring-prometheusext-operator"
+	return labels
+}
 
 //ObjectName returns name related to current cr
 //TODO: howto sync name of grafana?

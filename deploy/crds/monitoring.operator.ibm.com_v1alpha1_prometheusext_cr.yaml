@@ -3,7 +3,7 @@ kind: PrometheusExt
 metadata:
   labels:
     app.kubernetes.io/name: ibm-monitoring
-    app.kubernetes.io/instance: prometheusext
+    app.kubernetes.io/instance: common-monitoring
     app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   name: ibm-monitoring
 spec:
