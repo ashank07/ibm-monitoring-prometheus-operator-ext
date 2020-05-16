@@ -1091,7 +1091,7 @@ const (
                   local start_index,end_index = string.find(query, "release_name=[^},]+")
                   local release_name = string.sub(query, start_index + 14, end_index - 1)
                   local pod_list = get_release_pods(token, release_name)
-                  local updated_query = string.gsub(query, "release_name=[^},]+", "pod_name=~\""..pod_list.."\"")
+                  local updated_query = string.gsub(query, "release_name=[^},]+", "pod=~\""..pod_list.."\"")
                   ngx.log(ngx.DEBUG, 'updated_query is ', updated_query)
                   args[query_key] = updated_query
                   ngx.req.set_uri_args(args)
