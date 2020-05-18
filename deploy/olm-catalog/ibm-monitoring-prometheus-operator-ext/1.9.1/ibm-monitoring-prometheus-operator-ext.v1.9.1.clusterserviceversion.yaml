@@ -1,0 +1,532 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  labels:
+    app.kubernetes.io/name: ibm-monitoring
+    app.kubernetes.io/instance: common-monitoring
+    app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
+  annotations:
+    olm.skipRange: '>=1.8.0 <1.9.1'
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "monitoring.operator.ibm.com/v1alpha1",
+          "kind": "PrometheusExt",
+          "metadata": {
+            "name": "ibm-monitoring"
+          },
+          "spec": {
+            "alertManagerConfig": {
+              "logLevel": "info",
+              "serviceAccount": "ibm-monitoring-prometheusext-operand",
+              "servicePort": 9093
+            },
+            "certs": {
+              "autoClean": true,
+              "issuer": "cs-ca-clusterissuer",
+              "monitoringClientSecret": "ibm-monitoring-client-certs",
+              "monitoringSecret": "ibm-monitoring-certs"
+            },
+            "clusterPort": 443,
+            "grafanaSvcName": "ibm-monitoring-grafana",
+            "grafanaSvcPort": 3000,
+            "iamProvider": {
+              "idManagementSvc": "platform-identity-management",
+              "idManagementSvcPort": 4500,
+              "idProviderSvc": "platform-identity-provider",
+              "idProviderSvcPort": 4300
+            },
+            "mcmMonitor": {
+              "isHubCluster": false,
+              "serviceAccount": "ibm-monitoring-mcm-ctl"
+            },
+            "prometheusConfig": {
+              "logLevel": "info",
+              "nodeCPUThreshold": 85,
+              "nodeMemoryThreshold": 85,
+              "retention": "24h",
+              "serviceAccount": "ibm-monitoring-prometheusext-operand",
+              "servicePort": 9090
+            },
+            "prometheusOperator": {},
+            "storageClassName": ""
+          }
+        },
+        {
+          "apiVersion":"operator.ibm.com/v1alpha1",
+          "kind":"OperandRequest",
+          "metadata":{
+            "name":"monitoring-prometheus-ext-operator-request"
+          },
+          "spec":{
+            "requests":[
+              {
+                "operands":[
+                  {
+                    "name":"ibm-cert-manager-operator"
+                  },
+                  {
+                    "name": "ibm-iam-operator"
+                  },
+                  {
+                    "name": "ibm-management-ingress-operator"
+                  },
+                  {
+                    "name": "ibm-commonui-operator"
+                  }
+                ],
+                "registry":"common-service"
+              }
+            ]
+          }
+        }
+      ]
+    capabilities: Basic Install
+    categories: Monitoring
+    certified: "false"
+    createdAt: "2020-03-25 12:00:00"
+    description: Deploys Prometheus and Alertmanager instances with RBAC enabled.
+      It will also enable Multicloud monitoring
+    repository: https://github.com/IBM/ibm-monitoring-prometheus-operator-ext
+    containerImage: quay.io/opencloudio/ibm-monitoring-prometheusext-operator
+    support: IBM
+  name: ibm-monitoring-prometheus-operator-ext.v1.9.1
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: PrometheusExt will start Prometheus and Alertmanager instances
+        with RBAC enabled. It will also enable Multicloud monitoring
+      displayName: Prometheus Operator Extension
+      kind: PrometheusExt
+      name: prometheusexts.monitoring.operator.ibm.com
+      resources:
+        - kind: Deployment
+          version: v1
+        - kind: Service
+          version: v1
+        - kind: Prometheus
+          version: v1
+        - kind: Ingress
+          version: v1beta1
+        - kind: Certificate
+          version: v1alpha1
+        - kind: PrometheusExt
+          version: v1alpha1
+        - kind: Alertmanager
+          version: v1
+      specDescriptors:
+      - description: Host value of route cp-console
+        displayName: Cluster Address
+        path: clusterAddress
+      - description: Cluster domain name, cluster.local by default
+        displayName: Cluster Domain
+        path: clusterDomain
+      - description: Cluster name, mycluster by default
+        displayName: Cluster Name
+        path: clusterName
+      - description: Port value of route cp-console
+        displayName: Cluster Port
+        path: clusterPort
+      - description: Image of configmap reloader
+        displayName: Configmap Reload Image
+        path: configmapReloadImage
+      - description: Grafana service name trusted by prometheus
+        displayName: Grafana Svc Name
+        path: grafanaSvcName
+      - description: Grafana service port truested by prometheus
+        displayName: Grafana Svc Port
+        path: grafanaSvcPort
+      - description: Image of prometheus
+        displayName: Image
+        path: image
+      - description: Image pull policy
+        displayName: Image Policy
+        path: imagePolicy
+      - description: Extra image pull secrets
+        displayName: Image Pull Secrets
+        path: imagePullSecrets
+      - description: Image of prometheus config reloader
+        displayName: Prometheus Config Image
+        path: prometheusConfigImage
+      - description: repo:tag for router image
+        displayName: Router Image
+        path: routerImage
+      - description: Storage class name used by Prometheus and Alertmanager
+        displayName: Storage Class Name
+        path: storageClassName
+      - description: Inforamtion for prometheus operator deployment
+        displayName: Prometheus Operator
+        path: prometheusOperator
+      - description: Helm API service information
+        displayName: Helm Releases API
+        path: helmReleasesMonitor
+      - description: Configurations for IAM Provider
+        displayName: IAM Provider
+        path: iamProvider
+      - description: Configurations for tls certification
+        displayName: Certs
+        path: certs
+      - description: Configurations for mcm monitor controller
+        displayName: MCM Monitor Controller
+        path: mcmMonitor
+      - description: Configurations for prometheus
+        displayName: Prometheus Configuration
+        path: prometheusConfig
+      - description: Configurations for alertmanager
+        displayName: Alertmanager Configuration
+        path: alertManagerConfig
+      statusDescriptors:
+      - description: Status of the alert manager CR, created or not
+        displayName: Alertmanager
+        path: alertmanager
+      - description: Status of required configmaps, created or not
+        displayName: Configmaps
+        path: configmaps
+      - description: Status of the prometheus CR, created or not
+        displayName: Prometheus
+        path: prometheus
+      - description: Status of prometheus operator deployment
+        displayName: Prometheus Operator
+        path: prometheusOperator
+      - description: Status of required secrets, created or not
+        displayName: Secrets
+        path: secrets
+      version: v1alpha1
+  description: Operator deploys Prometheus and Alertmanager instances with RBAC enabled.
+    It will also enable Multicloud monitoring
+  displayName: IBM Monitoring Prometheus Operator Extension
+  icon:
+  - base64data: PHN2ZyB3aWR0aD0iMjQ5MCIgaGVpZ2h0PSIyNTAwIiB2aWV3Qm94PSIwIDAgMjU2IDI1NyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCI+PHBhdGggZD0iTTEyOC4wMDEuNjY3QzU3LjMxMS42NjcgMCA1Ny45NzEgMCAxMjguNjY0YzAgNzAuNjkgNTcuMzExIDEyNy45OTggMTI4LjAwMSAxMjcuOTk4UzI1NiAxOTkuMzU0IDI1NiAxMjguNjY0QzI1NiA1Ny45NyAxOTguNjg5LjY2NyAxMjguMDAxLjY2N3ptMCAyMzkuNTZjLTIwLjExMiAwLTM2LjQxOS0xMy40MzUtMzYuNDE5LTMwLjAwNGg3Mi44MzhjMCAxNi41NjYtMTYuMzA2IDMwLjAwNC0zNi40MTkgMzAuMDA0em02MC4xNTMtMzkuOTRINjcuODQyVjE3OC40N2gxMjAuMzE0djIxLjgxNmgtLjAwMnptLS40MzItMzMuMDQ1SDY4LjE4NWMtLjM5OC0uNDU4LS44MDQtLjkxLTEuMTg4LTEuMzc1LTEyLjMxNS0xNC45NTQtMTUuMjE2LTIyLjc2LTE4LjAzMi0zMC43MTYtLjA0OC0uMjYyIDE0LjkzMyAzLjA2IDI1LjU1NiA1LjQ1IDAgMCA1LjQ2NiAxLjI2NSAxMy40NTggMi43MjItNy42NzMtOC45OTQtMTIuMjMtMjAuNDI4LTEyLjIzLTMyLjExNiAwLTI1LjY1OCAxOS42OC00OC4wNzkgMTIuNTgtNjYuMjAxIDYuOTEuNTYyIDE0LjMgMTQuNTgzIDE0LjggMzYuNTA1IDcuMzQ2LTEwLjE1MiAxMC40Mi0yOC42OSAxMC40Mi00MC4wNTYgMC0xMS43NjkgNy43NTUtMjUuNDQgMTUuNTEyLTI1LjkwNy02LjkxNSAxMS4zOTYgMS43OSAyMS4xNjUgOS41MyA0NS40IDIuOTAyIDkuMTAzIDIuNTMyIDI0LjQyMyA0Ljc3MiAzNC4xMzguNzQ0LTIwLjE3OCA0LjIxMy00OS42MiAxNy4wMTQtNTkuNzg0LTUuNjQ3IDEyLjguODM2IDI4LjgxOCA1LjI3IDM2LjUxOCA3LjE1NCAxMi40MjQgMTEuNDkgMjEuODM2IDExLjQ5IDM5LjYzOCAwIDExLjkzNi00LjQwNyAyMy4xNzMtMTEuODQgMzEuOTU4IDguNDUyLTEuNTg2IDE0LjI4OS0zLjAxNiAxNC4yODktMy4wMTZsMjcuNDUtNS4zNTVjLjAwMi0uMDAyLTMuOTg3IDE2LjQwMS0xOS4zMTQgMzIuMTk3eiIgZmlsbD0iI0RBNEUzMSIvPjwvc3ZnPg==
+    mediatype: image/svg+xml
+  install:
+    spec:
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - services
+          - events
+          - configmaps
+          - secrets
+          - pods
+          - services/finalizers
+          verbs:
+          - '*'
+        - nonResourceURLs:
+          - /metrics
+          verbs:
+          - get
+        - apiGroups:
+          - apiextensions.k8s.io
+          resources:
+          - customresourcedefinitions
+          verbs:
+          - '*'
+        - apiGroups:
+          - ""
+          resources:
+          - events
+          - namespaces
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - apps
+          resources:
+          - statefulsets
+          verbs:
+          - '*'
+        - apiGroups:
+          - batch
+          resources:
+          - jobs
+          verbs:
+          - '*'
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - prometheuses
+          - alertmanagers
+          - servicemonitors
+          - prometheusrules
+          - podmonitors
+          - prometheuses/finalizers
+          - alertmanagers/finalizers
+          verbs:
+          - '*'
+        - apiGroups:
+          - monitoringcontroller.cloud.ibm.com
+          resources:
+          - monitoringdashboards
+          verbs:
+          - '*'
+        - apiGroups:
+          - mcm.ibm.com
+          resources:
+          - clusterstatuses
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - security.openshift.io
+          resourceNames:
+          - privileged
+          resources:
+          - securitycontextconstraints
+          verbs:
+          - use
+        serviceAccountName: ibm-monitoring-mcm-ctl
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          - services
+          - endpoints
+          - persistentvolumeclaims
+          - events
+          - configmaps
+          - secrets
+          verbs:
+          - '*'
+        - apiGroups:
+          - apps
+          resources:
+          - deployments
+          - statefulsets
+          - replicasets
+          verbs:
+          - '*'
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - prometheuses
+          - alertmanagers
+          - servicemonitors
+          - prometheusrules
+          verbs:
+          - '*'
+        - apiGroups:
+          - certmanager.k8s.io
+          resources:
+          - certificates
+          verbs:
+          - '*'
+        - apiGroups:
+          - certmanager.k8s.io
+          resources:
+          - clusterissuers
+          verbs:
+          - use
+        - apiGroups:
+          - monitoring.operator.ibm.com
+          resources:
+          - prometheusexts
+          - prometheusexts/finalizers
+          - prometheusexts/status
+          verbs:
+          - '*'
+        - apiGroups:
+          - monitoring.operator.ibm.com
+          resources:
+          - exporters
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - extensions
+          resources:
+          - ingresses
+          verbs:
+          - '*'
+        serviceAccountName: ibm-monitoring-prometheus-operator-ext
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - services
+          - nodes
+          - nodes/proxy
+          - endpoints
+          - pods
+          - configmaps
+          verbs:
+          - get
+          - list
+          - watch
+        - nonResourceURLs:
+          - /metrics
+          verbs:
+          - get
+        - apiGroups:
+          - security.openshift.io
+          resourceNames:
+          - privileged
+          resources:
+          - securitycontextconstraints
+          verbs:
+          - use
+        serviceAccountName: ibm-monitoring-prometheusext-operand
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - nodes
+          - services
+          - endpoints
+          - pods
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          verbs:
+          - get
+        serviceAccountName: prometheus-k8s
+      - rules:
+        - apiGroups:
+          - apiextensions.k8s.io
+          resources:
+          - customresourcedefinitions
+          verbs:
+          - '*'
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - alertmanagers
+          - prometheuses
+          - prometheuses/finalizers
+          - alertmanagers/finalizers
+          - servicemonitors
+          - podmonitors
+          - prometheusrules
+          verbs:
+          - '*'
+        - apiGroups:
+          - apps
+          resources:
+          - statefulsets
+          verbs:
+          - '*'
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          - secrets
+          verbs:
+          - '*'
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          verbs:
+          - list
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - services
+          - services/finalizers
+          - endpoints
+          verbs:
+          - get
+          - create
+          - update
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - namespaces
+          verbs:
+          - get
+        serviceAccountName: prometheus-operator
+      deployments:
+      - name: ibm-monitoring-prometheus-operator-ext
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              name: ibm-monitoring-prometheus-operator-ext
+          strategy: {}
+          template:
+            metadata:
+              annotations:
+                productID: 068a62892a1e4db39641342e592daa25
+                productMetric: FREE
+                productName: IBM Cloud Platform Common Services
+                productVersion: 3.4.0
+              labels:
+                name: ibm-monitoring-prometheus-operator-ext
+            spec:
+              containers:
+              - command:
+                - ibm-monitoring-prometheusext-operator
+                env:
+                - name: WATCH_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['olm.targetNamespaces']
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: OPERATOR_NAME
+                  value: ibm-monitoring-prometheusext-operator
+                - name: AM_IMAGE
+                  value: quay.io/opencloudio/alertmanager@sha256:9b084bb932cadafbb085fa9236c7cc9cfab29740a09f63c9b77e1c722b041826
+                - name: PROME_IMAGE
+                  value: quay.io/opencloudio/prometheus@sha256:efd42bc1d24b298c11234ad42d89bf3f76889e184f65d392dddbcd5051ed36d8
+                - name: CM_RELOAD_IMAGE
+                  value: quay.io/opencloudio/configmap-reload@sha256:02233bcce274ca6fcdba80fe31b559caac3cfabdf6d63580eaf498533f2cf80b
+                - name: PROM_OP_IMAGE
+                  value: quay.io/opencloudio/prometheus-operator@sha256:ee2e9f5d6d06603e159a22ccfed8d9572828859559758fbcb2604a5e5c8d1f27
+                - name: PROM_CONF_IMAGE
+                  value: quay.io/opencloudio/prometheus-config-reloader@sha256:bdfd86417fd21276b8bc4abdc2ea2d1bc8f1b6297c2af6b2c4842d72b683b327
+                - name: ROUTER_IMAGE
+                  value: quay.io/opencloudio/icp-management-ingress@sha256:f6694ea8a461468989874b4b091f1d64366eacb9821cc9836d8100e34f333634
+                - name: MCM_HELPER_IMAGE
+                  value: quay.io/opencloudio/icp-initcontainer@sha256:9aad9fd724ec9308bec711d7738b5f0ae0c37a72ffb19a26dbcf622f1a603e89
+                - name: MCM_IMAGE
+                  value: quay.io/opencloudio/prometheus-controller@sha256:0c107f53b4156012e55f88e4917c6c98209d5693dfbec96171019bae9ec779ad
+                image: quay.io/opencloudio/ibm-monitoring-prometheusext-operator
+                imagePullPolicy: Always
+                name: ibm-monitoring-prometheus-operator-ext
+                resources: {}
+              serviceAccountName: ibm-monitoring-prometheus-operator-ext
+    strategy: deployment
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: false
+    type: AllNamespaces
+  maturity: stable
+  keywords:
+  - monitoring
+  - prometheus
+  maintainers:
+  - email: supports@ibm.com
+    name: IBM Support
+  links:
+  - name: Promethues Extension Operator
+    url: https://github.com/IBM/ibm-monitoring-prometheus-operator-ext
+  - name: Prometheus Operator
+    url: https://github.com/coreos/prometheus-operator
+  - name: Prometheus
+    url: https://www.prometheus.io/
+  provider:
+    name: IBM
+  replaces: ibm-monitoring-prometheus-operator-ext.v1.8.0
+  version: 1.9.1
