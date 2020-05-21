@@ -62,7 +62,6 @@ func UpdatedMCMCtlDeployment(cr *promext.PrometheusExt, curr *appsv1.Deployment)
 
 	deployment := curr.DeepCopy()
 	deployment.ObjectMeta.Labels = msmcCtrlLabels(cr)
-	deployment.Spec.Selector = spec.Selector
 
 	deployment.Spec.Template.ObjectMeta.Labels = spec.Template.ObjectMeta.Labels
 	deployment.Spec.Template.ObjectMeta.Annotations = spec.Template.ObjectMeta.Annotations
@@ -79,7 +78,7 @@ func mcmDeploymentSpec(cr *promext.PrometheusExt) (*appsv1.DeploymentSpec, error
 	spec := &appsv1.DeploymentSpec{
 		Replicas: &replicas,
 		Selector: &metav1.LabelSelector{
-			MatchLabels: msmcCtrlLabels(cr),
+			MatchLabels: msmcCtrlSelectorLabels(cr),
 		},
 		Template: v1.PodTemplateSpec{
 			ObjectMeta: metav1.ObjectMeta{
@@ -207,14 +206,19 @@ func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 
 }
 func msmcCtrlLabels(cr *promext.PrometheusExt) map[string]string {
-	labels := make(map[string]string)
-	labels[AppLabelKey] = AppLabelValue
-	labels[Component] = "mcm-ctl"
-	labels[managedLabelKey()] = managedLabelValue(cr)
+	labels := msmcCtrlSelectorLabels(cr)
 	labels = appendCommonLabels(labels)
 	for key, v := range cr.Labels {
 		labels[key] = v
 	}
+	return labels
+
+}
+func msmcCtrlSelectorLabels(cr *promext.PrometheusExt) map[string]string {
+	labels := make(map[string]string)
+	labels[AppLabelKey] = AppLabelValue
+	labels[Component] = "mcm-ctl"
+	labels[managedLabelKey()] = managedLabelValue(cr)
 	return labels
 
 }
