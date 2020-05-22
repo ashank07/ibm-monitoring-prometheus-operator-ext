@@ -260,31 +260,13 @@ func (r *Reconsiler) syncClusterHostInfo() error {
 func (r *Reconsiler) getClusterInfo() (string, string, error) {
 	var host string
 	var port string
-	//check from cr spec
-	if r.CR.Spec.ClusterAddress != "" {
-		host = r.CR.Spec.ClusterAddress
-	}
-	if r.CR.Spec.ClusterPort != 0 {
+	//get cluster port. Overwrite value in old CR for upgrade scenario
+	if r.CR.Spec.ClusterPort != 0 && r.CR.Spec.ClusterPort != 443 {
 		port = fmt.Sprintf("%d", r.CR.Spec.ClusterPort)
 	} else {
 		port = model.ExternalPort
 	}
-	if host != "" {
-		return host, port, nil
-	}
-
-	//check from cr annotation
-	if host == "" {
-		ann, ok := r.CR.Annotations[model.ClusterHostAnn]
-		if ok && ann != "" {
-			host = ann
-		}
-	}
-	if host != "" {
-		return host, port, nil
-	}
-
-	//check from ingress configmap
+	//get cluster host url from ingress configmap
 	key := client.ObjectKey{Namespace: r.CR.ObjectMeta.Namespace, Name: model.ManagedIngressCm}
 	cm := v1.ConfigMap{}
 	if err := r.Client.Get(r.Context, key, &cm); err != nil {
