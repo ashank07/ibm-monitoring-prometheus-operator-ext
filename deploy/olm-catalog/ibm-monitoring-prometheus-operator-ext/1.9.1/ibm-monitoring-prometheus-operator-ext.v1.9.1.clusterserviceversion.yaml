@@ -500,7 +500,13 @@ spec:
                 image: quay.io/opencloudio/ibm-monitoring-prometheusext-operator
                 imagePullPolicy: Always
                 name: ibm-monitoring-prometheus-operator-ext
-                resources: {}
+                resources:
+                  limits:
+                    cpu: 50m
+                    memory: 512Mi
+                  requests:
+                    cpu: 20m
+                    memory: 64Mi
               serviceAccountName: ibm-monitoring-prometheus-operator-ext
     strategy: deployment
   installModes:

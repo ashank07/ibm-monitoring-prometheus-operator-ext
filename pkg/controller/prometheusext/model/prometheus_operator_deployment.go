@@ -95,7 +95,7 @@ func prometneusOperatorContainer(cr *promext.PrometheusExt) *v1.Container {
 	if err != nil {
 		log.Error(err, "")
 	}
-	memLimit, err = resource.ParseQuantity("256Mi")
+	memLimit, err = resource.ParseQuantity("512Mi")
 	if err != nil {
 		log.Error(err, "")
 	}
