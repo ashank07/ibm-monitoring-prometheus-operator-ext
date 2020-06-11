@@ -27,6 +27,14 @@ Before you install this operator, you need to first install the operator depende
 
 - For the list of prerequisites for installing the operator, see the IBM Knowledge Center [Preparing to install services documentation](http://ibm.biz/cpcs_opinstprereq).
 
+## Persistent Volume
+
+The operator requires PVs for data persistence for Prometheus and Alertmanager. It support both ReadWriteOnce (RWO) and ReadWriteMany (RWX) modes. RWO mode is recommended.
+
+The operator will find available StorageClass in the cluser automatically. It will use the default StorageClass if defined. If no default StorageClass defined, it will find available one randomly.
+
+You can also specify StorageClass in CR use `storageClassName` parameter.
+
 ## Documentation
 
 To install the operator with the IBM Common Services Operator follow the installation and configuration instructions within the IBM Knowledge Center.
