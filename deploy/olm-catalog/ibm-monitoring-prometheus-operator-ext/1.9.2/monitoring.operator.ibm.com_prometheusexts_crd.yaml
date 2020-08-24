@@ -1,0 +1,394 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  labels:
+    app.kubernetes.io/name: ibm-monitoring
+    app.kubernetes.io/instance: common-monitoring
+    app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
+  name: prometheusexts.monitoring.operator.ibm.com
+spec:
+  group: monitoring.operator.ibm.com
+  names:
+    kind: PrometheusExt
+    listKind: PrometheusExtList
+    plural: prometheusexts
+    singular: prometheusext
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      description: PrometheusExt will start Prometheus and Alertmanager instances
+        with RBAC enabled. It will also enable Multicloud monitoring
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: PrometheusExtSpec defines the desired state of PrometheusExt
+          properties:
+            alertManagerConfig:
+              description: Configurations for alertmanager
+              properties:
+                imageRepo:
+                  type: string
+                imageTag:
+                  type: string
+                logLevel:
+                  type: string
+                pvSize:
+                  type: string
+                resource:
+                  description: ResourceRequirements describes the compute resource
+                    requirements.
+                  properties:
+                    limits:
+                      additionalProperties:
+                        type: string
+                      description: 'Limits describes the maximum amount of compute
+                        resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                    requests:
+                      additionalProperties:
+                        type: string
+                      description: 'Requests describes the minimum amount of compute
+                        resources required. If Requests is omitted for a container,
+                        it defaults to Limits if that is explicitly specified, otherwise
+                        to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                  type: object
+                serviceAccount:
+                  type: string
+                servicePort:
+                  format: int32
+                  type: integer
+              required:
+              - servicePort
+              type: object
+            certs:
+              description: Configurations for tls certification
+              properties:
+                autoClean:
+                  description: If it is false, user can create secret manually before
+                    creating CR and operator will not recreate it if secret exists
+                    already If it is true, operator will recreate secret if it is
+                    not created by certificate (cert-manager)
+                  type: boolean
+                issuer:
+                  description: The issure name. It is used to generated tls certificates.
+                    All tls certificates of monitoring operators need to use same
+                    Issuer
+                  type: string
+                monitoringClientSecret:
+                  description: Define monitoring stack client(prometheus, exporters)'s
+                    tls cert secret. It is created by cert manager
+                  type: string
+                monitoringSecret:
+                  description: Prometheus and AlertManager' tls cert. Define the secret
+                    name. It is created by cert manager
+                  type: string
+              required:
+              - issuer
+              - monitoringClientSecret
+              - monitoringSecret
+              type: object
+            clusterAddress:
+              description: Host value of route cp-console
+              type: string
+            clusterDomain:
+              description: Cluster domain name, cluster.local by default
+              type: string
+            clusterName:
+              description: Cluster name, mycluster by default
+              type: string
+            clusterPort:
+              description: Port value of route cp-console
+              format: int32
+              type: integer
+            grafanaSvcName:
+              description: Grafana service name trusted by prometheus
+              type: string
+            grafanaSvcPort:
+              description: Grafana service port truested by prometheus
+              format: int32
+              type: integer
+            helmReleasesMonitor:
+              description: Helm API service information
+              properties:
+                namespace:
+                  type: string
+                port:
+                  format: int32
+                  type: integer
+              type: object
+            iamProvider:
+              description: Configurations for IAM Provider
+              properties:
+                idManagementSvc:
+                  type: string
+                idManagementSvcPort:
+                  format: int32
+                  type: integer
+                idProviderSvc:
+                  type: string
+                idProviderSvcPort:
+                  format: int32
+                  type: integer
+                namespace:
+                  type: string
+              required:
+              - idManagementSvc
+              - idManagementSvcPort
+              - idProviderSvc
+              - idProviderSvcPort
+              type: object
+            imagePolicy:
+              description: Image pull policy
+              type: string
+            imagePullSecrets:
+              description: Extra image pull secrets
+              items:
+                type: string
+              type: array
+            mcmMonitor:
+              description: Configurations for mcm monitor controller
+              properties:
+                helpeImage:
+                  description: MCM helper image for some initiallizing work
+                  type: string
+                image:
+                  description: Image for mcm monitoring controller
+                  type: string
+                isHubCluster:
+                  description: If it is running on MCM Hub cluster or not
+                  type: boolean
+                resource:
+                  description: ResourceRequirements describes the compute resource
+                    requirements.
+                  properties:
+                    limits:
+                      additionalProperties:
+                        type: string
+                      description: 'Limits describes the maximum amount of compute
+                        resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                    requests:
+                      additionalProperties:
+                        type: string
+                      description: 'Requests describes the minimum amount of compute
+                        resources required. If Requests is omitted for a container,
+                        it defaults to Limits if that is explicitly specified, otherwise
+                        to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                  type: object
+                serviceAccount:
+                  type: string
+              type: object
+            prometheusConfig:
+              description: Configurations for prometheus
+              properties:
+                evaluationInterval:
+                  type: string
+                imageRepo:
+                  type: string
+                imageTag:
+                  type: string
+                logLevel:
+                  type: string
+                nodeCPUThreshold:
+                  type: integer
+                nodeMemoryThreshold:
+                  type: integer
+                pvSize:
+                  type: string
+                resource:
+                  description: ResourceRequirements describes the compute resource
+                    requirements.
+                  properties:
+                    limits:
+                      additionalProperties:
+                        type: string
+                      description: 'Limits describes the maximum amount of compute
+                        resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                    requests:
+                      additionalProperties:
+                        type: string
+                      description: 'Requests describes the minimum amount of compute
+                        resources required. If Requests is omitted for a container,
+                        it defaults to Limits if that is explicitly specified, otherwise
+                        to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                  type: object
+                retention:
+                  type: string
+                routerResource:
+                  description: ResourceRequirements describes the compute resource
+                    requirements.
+                  properties:
+                    limits:
+                      additionalProperties:
+                        type: string
+                      description: 'Limits describes the maximum amount of compute
+                        resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                    requests:
+                      additionalProperties:
+                        type: string
+                      description: 'Requests describes the minimum amount of compute
+                        resources required. If Requests is omitted for a container,
+                        it defaults to Limits if that is explicitly specified, otherwise
+                        to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/'
+                      type: object
+                  type: object
+                scrapeInterval:
+                  type: string
+                serviceAccount:
+                  type: string
+                servicePort:
+                  format: int32
+                  type: integer
+              required:
+              - nodeCPUThreshold
+              - nodeMemoryThreshold
+              - servicePort
+              type: object
+            prometheusOperator:
+              description: PrometheusOperator defines inforamtion for prometheus operator
+                deployment
+              properties:
+                configmapReloadImage:
+                  description: Image of configmap reloader
+                  type: string
+                image:
+                  description: Image of prometheus
+                  type: string
+                prometheusConfigImage:
+                  description: Image of prometheus config reloader
+                  type: string
+              type: object
+            routerImage:
+              description: repo:tag for router image
+              type: string
+            storageClassName:
+              description: Storage class name used by Prometheus and Alertmanager
+              type: string
+          required:
+          - alertManagerConfig
+          - certs
+          - grafanaSvcName
+          - grafanaSvcPort
+          - iamProvider
+          - prometheusConfig
+          - storageClassName
+          type: object
+        status:
+          description: PrometheusExtStatus defines the observed state of PrometheusExt
+          properties:
+            alertmanager:
+              description: Status of the alert manager CR, created or not
+              type: string
+            configmaps:
+              description: Status of required configmaps, created or not
+              type: string
+            exporter:
+              description: Status of the exporter CR, created or not
+              type: string
+            prometheus:
+              description: Status of the prometheus CR, created or not
+              type: string
+            prometheusOperator:
+              description: Status of prometheus operator deployment
+              properties:
+                availableReplicas:
+                  description: Total number of available pods (ready for at least
+                    minReadySeconds) targeted by this deployment.
+                  format: int32
+                  type: integer
+                collisionCount:
+                  description: Count of hash collisions for the Deployment. The Deployment
+                    controller uses this field as a collision avoidance mechanism
+                    when it needs to create the name for the newest ReplicaSet.
+                  format: int32
+                  type: integer
+                conditions:
+                  description: Represents the latest available observations of a deployment's
+                    current state.
+                  items:
+                    description: DeploymentCondition describes the state of a deployment
+                      at a certain point.
+                    properties:
+                      lastTransitionTime:
+                        description: Last time the condition transitioned from one
+                          status to another.
+                        format: date-time
+                        type: string
+                      lastUpdateTime:
+                        description: The last time this condition was updated.
+                        format: date-time
+                        type: string
+                      message:
+                        description: A human readable message indicating details about
+                          the transition.
+                        type: string
+                      reason:
+                        description: The reason for the condition's last transition.
+                        type: string
+                      status:
+                        description: Status of the condition, one of True, False,
+                          Unknown.
+                        type: string
+                      type:
+                        description: Type of deployment condition.
+                        type: string
+                    required:
+                    - status
+                    - type
+                    type: object
+                  type: array
+                observedGeneration:
+                  description: The generation observed by the deployment controller.
+                  format: int64
+                  type: integer
+                readyReplicas:
+                  description: Total number of ready pods targeted by this deployment.
+                  format: int32
+                  type: integer
+                replicas:
+                  description: Total number of non-terminated pods targeted by this
+                    deployment (their labels match the selector).
+                  format: int32
+                  type: integer
+                unavailableReplicas:
+                  description: Total number of unavailable pods targeted by this deployment.
+                    This is the total number of pods that are still required for the
+                    deployment to have 100% available capacity. They may either be
+                    pods that are running but not yet available or pods that still
+                    have not been created.
+                  format: int32
+                  type: integer
+                updatedReplicas:
+                  description: Total number of non-terminated pods targeted by this
+                    deployment that have the desired template spec.
+                  format: int32
+                  type: integer
+              type: object
+            secrets:
+              description: Status of required secrets, created or not
+              type: string
+          type: object
+      type: object
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
