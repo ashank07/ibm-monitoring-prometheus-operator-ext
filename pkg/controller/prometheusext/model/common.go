@@ -87,7 +87,6 @@ func commonPodAnnotations() map[string]string {
 		"pvJob":           "true",
 		"productName":     "IBM Cloud Platform Common Services",
 		"productID":       "068a62892a1e4db39641342e592daa25",
-		"productVersion":  "3.4.0",
 		"productMetric":   "FREE",
 	}
 }
