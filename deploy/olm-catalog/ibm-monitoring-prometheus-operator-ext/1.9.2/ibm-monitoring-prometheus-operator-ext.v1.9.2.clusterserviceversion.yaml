@@ -484,7 +484,7 @@ spec:
                       - name: AM_IMAGE
                         value: quay.io/opencloudio/alertmanager@sha256:4810de4093d11a0e5477ffc252e47561d36bbea57b288246a33d561e25495355
                       - name: PROME_IMAGE
-                        value: quay.io/opencloudio/prometheus@sha256:4810de4093d11a0e5477ffc252e47561d36bbea57b288246a33d561e25495355
+                        value: quay.io/opencloudio/prometheus@sha256:249ad4ef431bffbb89712452d03ae601e621782e734b5342a35111f103cf4077
                       - name: CM_RELOAD_IMAGE
                         value: quay.io/opencloudio/configmap-reload@sha256:c55a9bac9ea08a6973dc89cd996352ab44207b677e255c005bf5b053273d7c31
                       - name: PROM_OP_IMAGE
