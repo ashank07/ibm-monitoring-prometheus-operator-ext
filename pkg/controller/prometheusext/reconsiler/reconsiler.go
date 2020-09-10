@@ -33,7 +33,6 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 
 	monitoringv1alpha1 "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
-	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 	promodel "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 )
 
@@ -126,12 +125,12 @@ func (r *Reconsiler) updateStatus() {
 		r.CR.Status.PrometheusOperator = r.CurrentState.PrometheusOperatorDeployment.Status
 	}
 	if r.CurrentState.ManagedPrometheus == nil {
-		r.CR.Status.Prometheus = model.NotReady
+		r.CR.Status.Prometheus = promodel.NotReady
 	} else {
 		r.CR.Status.Prometheus = r.CurrentState.ManagedPrometheus.ObjectMeta.Name
 	}
 	if r.CurrentState.ManagedAlertmanager == nil {
-		r.CR.Status.Alertmanager = model.NotReady
+		r.CR.Status.Alertmanager = promodel.NotReady
 	} else {
 		r.CR.Status.Alertmanager = r.CurrentState.ManagedAlertmanager.ObjectMeta.Name
 	}
@@ -186,7 +185,7 @@ func (r *Reconsiler) cmStatus() string {
 
 	}
 
-	return model.Ready + ": " + readyStr + ", " + model.NotReady + ": " + notReadyStr
+	return promodel.Ready + ": " + readyStr + ", " + promodel.NotReady + ": " + notReadyStr
 }
 func (r *Reconsiler) secretStatus() string {
 	var ready []string
@@ -217,7 +216,7 @@ func (r *Reconsiler) secretStatus() string {
 
 	}
 
-	return model.Ready + ": " + readyStr + ", " + model.NotReady + ": " + notReadyStr
+	return promodel.Ready + ": " + readyStr + ", " + promodel.NotReady + ": " + notReadyStr
 }
 
 func (r *Reconsiler) createObject(obj runtime.Object) error {
@@ -233,7 +232,7 @@ func (r *Reconsiler) updateObject(obj runtime.Object) error {
 	}
 	if err := r.Client.Update(r.Context, obj); err != nil {
 		if kerrors.IsConflict(err) {
-			return model.NewRequeueError("sync.UpdateObject", "Object version conflict when updating and requeue it")
+			return promodel.NewRequeueError("sync.UpdateObject", "Object version conflict when updating and requeue it")
 		}
 		return err
 

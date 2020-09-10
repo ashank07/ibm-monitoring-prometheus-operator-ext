@@ -20,7 +20,6 @@ import (
 	cert "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	monitoringv1alpha1 "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
 	proext "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
 )
 
@@ -54,7 +53,7 @@ func getCertLabels(cr *proext.PrometheusExt) map[string]string {
 }
 
 //MonitoringDNSNames get dns names for monitoring cert
-func MonitoringDNSNames(cr *monitoringv1alpha1.PrometheusExt) []string {
+func MonitoringDNSNames(cr *proext.PrometheusExt) []string {
 	dnsNames := []string{}
 	dnsNames = append(dnsNames,
 		PromethuesName(cr),
