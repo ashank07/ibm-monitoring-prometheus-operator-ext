@@ -61,6 +61,7 @@ func UpdatedPrometheus(cr *promext.PrometheusExt, current *promv1.Prometheus) (*
 	prometheus.Spec = *spec
 	prometheus.Spec.PodMetadata.CreationTimestamp = current.Spec.PodMetadata.CreationTimestamp
 	prometheus.Spec.Storage.VolumeClaimTemplate.CreationTimestamp = current.Spec.Storage.VolumeClaimTemplate.CreationTimestamp
+	prometheus.Spec.NodeSelector = cr.Spec.NodeSelector
 	return prometheus, nil
 }
 
@@ -207,6 +208,7 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 	replicas := int32(1)
 	pvsize := DefaultPVSize
 	scName := cr.Annotations[StorageClassAnn]
+
 	if cr.Spec.PrometheusConfig.PVSize != "" {
 		pvsize = cr.Spec.PrometheusConfig.PVSize
 	}
@@ -241,7 +243,8 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 			},
 			Key: scrapeTargetsFileName(),
 		},
-		Containers: []v1.Container{*NewRouterContainer(cr, Prometheus)},
+		Containers:   []v1.Container{*NewRouterContainer(cr, Prometheus)},
+		NodeSelector: cr.Spec.NodeSelector,
 		Storage: &promv1.StorageSpec{
 			VolumeClaimTemplate: v1.PersistentVolumeClaim{
 				ObjectMeta: metav1.ObjectMeta{

@@ -200,6 +200,13 @@ func (in *PrometheusExtSpec) DeepCopyInto(out *PrometheusExtSpec) {
 	out.IAMProvider = in.IAMProvider
 	out.HelmReleasesMonitor = in.HelmReleasesMonitor
 	out.PrometheusOperator = in.PrometheusOperator
+	if in.NodeSelector != nil {
+		in, out := &in.NodeSelector, &out.NodeSelector
+		*out = make(map[string]string, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
+	}
 	return
 }
 

@@ -72,6 +72,7 @@ func NewAlertmanager(cr *promext.PrometheusExt) (*promv1.Alertmanager, error) {
 	replicas := int32(1)
 	pvsize := DefaultPVSize
 	scName := cr.Annotations[StorageClassAnn]
+
 	if cr.Spec.AlertManagerConfig.PVSize != "" {
 		pvsize = cr.Spec.AlertManagerConfig.PVSize
 	}
@@ -91,12 +92,13 @@ func NewAlertmanager(cr *promext.PrometheusExt) (*promv1.Alertmanager, error) {
 				Annotations:       commonPodAnnotations(),
 				CreationTimestamp: metav1.Time{Time: time.Now()},
 			},
-			Replicas:    &replicas,
-			Resources:   alertManagerResources(cr),
-			Secrets:     []string{cr.Spec.Certs.MonitoringSecret, cr.Spec.Certs.MonitoringClientSecret},
-			ConfigMaps:  []string{RouterEntryCmName(cr), AlertRouterNgCmName(cr)},
-			RoutePrefix: "/alertmanager",
-			Containers:  []v1.Container{*NewRouterContainer(cr, Alertmanager)},
+			Replicas:     &replicas,
+			Resources:    alertManagerResources(cr),
+			Secrets:      []string{cr.Spec.Certs.MonitoringSecret, cr.Spec.Certs.MonitoringClientSecret},
+			ConfigMaps:   []string{RouterEntryCmName(cr), AlertRouterNgCmName(cr)},
+			RoutePrefix:  "/alertmanager",
+			Containers:   []v1.Container{*NewRouterContainer(cr, Alertmanager)},
+			NodeSelector: cr.Spec.NodeSelector,
 			Storage: &promv1.StorageSpec{
 				VolumeClaimTemplate: v1.PersistentVolumeClaim{
 					ObjectMeta: metav1.ObjectMeta{
@@ -216,6 +218,7 @@ func UpdatedAlertmanager(cr *promext.PrometheusExt, curr *promv1.Alertmanager) (
 	if cr.Spec.AlertManagerConfig.ServiceAccountName != "" {
 		am.Spec.ServiceAccountName = cr.Spec.AlertManagerConfig.ServiceAccountName
 	}
+	am.Spec.NodeSelector = cr.Spec.NodeSelector
 
 	return am, nil
 }

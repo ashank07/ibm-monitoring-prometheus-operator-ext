@@ -64,6 +64,7 @@ func promeDeploymentSpec(cr *promext.PrometheusExt) *appsv1.DeploymentSpec {
 				HostIPC:            false,
 				HostNetwork:        false,
 				ServiceAccountName: "prometheus-operator",
+				NodeSelector:       cr.Spec.NodeSelector,
 			},
 		},
 	}
@@ -162,6 +163,7 @@ func UpdatedProOperatorDeployment(cr *promext.PrometheusExt, curr *appsv1.Deploy
 	deployment.Spec.Template.ObjectMeta.Labels = spec.Template.ObjectMeta.Labels
 	deployment.Spec.Template.ObjectMeta.Annotations = spec.Template.ObjectMeta.Annotations
 	deployment.Spec.Template.Spec.Containers = spec.Template.Spec.Containers
+	deployment.Spec.Template.Spec.NodeSelector = cr.Spec.NodeSelector
 
 	return deployment
 }

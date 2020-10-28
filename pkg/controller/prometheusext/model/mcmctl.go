@@ -69,12 +69,13 @@ func UpdatedMCMCtlDeployment(cr *promext.PrometheusExt, curr *appsv1.Deployment)
 	deployment.Spec.Template.Spec.Volumes = spec.Template.Spec.Volumes
 	deployment.Spec.Template.Spec.ImagePullSecrets = spec.Template.Spec.ImagePullSecrets
 	deployment.Spec.Template.Spec.ServiceAccountName = spec.Template.Spec.ServiceAccountName
-
+	deployment.Spec.Template.Spec.NodeSelector = cr.Spec.NodeSelector
 	return deployment, nil
 
 }
 func mcmDeploymentSpec(cr *promext.PrometheusExt) (*appsv1.DeploymentSpec, error) {
 	replicas := int32(1)
+
 	spec := &appsv1.DeploymentSpec{
 		Replicas: &replicas,
 		Selector: &metav1.LabelSelector{
@@ -87,9 +88,10 @@ func mcmDeploymentSpec(cr *promext.PrometheusExt) (*appsv1.DeploymentSpec, error
 				Annotations: commonPodAnnotations(),
 			},
 			Spec: v1.PodSpec{
-				HostPID:     false,
-				HostIPC:     false,
-				HostNetwork: false,
+				HostPID:      false,
+				HostIPC:      false,
+				HostNetwork:  false,
+				NodeSelector: cr.Spec.NodeSelector,
 				Volumes: []v1.Volume{
 					{
 						Name: "monitoring-ca-certs",

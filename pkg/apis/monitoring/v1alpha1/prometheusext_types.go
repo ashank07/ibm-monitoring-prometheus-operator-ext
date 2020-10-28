@@ -81,6 +81,7 @@ type PrometheusExtSpec struct {
 	HelmReleasesMonitor `json:"helmReleasesMonitor,omitempty"`
 
 	PrometheusOperator `json:"prometheusOperator,omitempty"`
+	NodeSelector       map[string]string `json:"nodeSelector,omitempty"`
 }
 
 //PrometheusOperator defines inforamtion for prometheus operator deployment
