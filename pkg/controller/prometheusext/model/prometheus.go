@@ -340,12 +340,12 @@ func ScrapeTargetsSecretName(cr *promext.PrometheusExt) string {
 }
 
 func initContainer(cr *promext.PrometheusExt) *v1.Container {
-	p := true
+	// p := true
 	return &v1.Container{
-		Name:            "chmod",
-		Image:           *imageName(os.Getenv(helperImageEnv), cr.Spec.HelperImage),
-		SecurityContext: &v1.SecurityContext{Privileged: &p},
-		Command:         []string{"/bin/sh", "-c", "if [ ! -d /prometheus ];then mkdir /prometheus; fi;chmod -R 777 /prometheus"},
+		Name:  "chmod",
+		Image: *imageName(os.Getenv(helperImageEnv), cr.Spec.HelperImage),
+		// SecurityContext: &v1.SecurityContext{Privileged: &p},
+		Command: []string{"/bin/sh", "-c", "if [ ! -d /prometheus ];then mkdir /prometheus; fi;chmod -R 777 /prometheus"},
 		VolumeMounts: []v1.VolumeMount{{
 			Name:      "prometheus-" + ObjectName(cr, Prometheus) + "-db",
 			MountPath: "/prometheus",

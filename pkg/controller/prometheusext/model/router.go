@@ -361,10 +361,7 @@ func UpdatedRouterEntryCm(cr *promext.PrometheusExt, curr *v1.ConfigMap) (*v1.Co
 
 //NewRouterContainer returns router container
 func NewRouterContainer(cr *promext.PrometheusExt, ot ObjectType) *v1.Container {
-	pe := false
-	p := false
 	rofs := false
-	drops := []v1.Capability{"ALL"}
 	adds := []v1.Capability{"CHOWN", "NET_ADMIN", "NET_RAW", "LEASE", "SETGID", "SETUID"}
 
 	container := &v1.Container{
@@ -372,12 +369,9 @@ func NewRouterContainer(cr *promext.PrometheusExt, ot ObjectType) *v1.Container 
 		Image:           *imageName(os.Getenv(routerImageEnv), cr.Spec.RouterImage),
 		ImagePullPolicy: cr.Spec.ImagePolicy,
 		SecurityContext: &v1.SecurityContext{
-			AllowPrivilegeEscalation: &pe,
-			Privileged:               &p,
-			ReadOnlyRootFilesystem:   &rofs,
+			ReadOnlyRootFilesystem: &rofs,
 			Capabilities: &v1.Capabilities{
-				Drop: drops,
-				Add:  adds,
+				Add: adds,
 			},
 		},
 		Resources: cr.Spec.PrometheusConfig.RouterResource,

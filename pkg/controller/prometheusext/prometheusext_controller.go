@@ -21,6 +21,7 @@ import (
 	"time"
 
 	promev1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
+	secv1client "github.com/openshift/client-go/security/clientset/versioned/typed/security/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -52,7 +53,11 @@ func Add(mgr manager.Manager) error {
 
 // newReconciler returns a new reconcile.Reconciler
 func newReconciler(mgr manager.Manager) reconcile.Reconciler {
-	return &ReconcilePrometheusExt{client: mgr.GetClient(), scheme: mgr.GetScheme()}
+	return &ReconcilePrometheusExt{
+		client:    mgr.GetClient(),
+		scheme:    mgr.GetScheme(),
+		secClient: secv1client.NewForConfigOrDie(mgr.GetConfig()),
+	}
 }
 
 // add adds a new Controller to mgr with r as the reconcile.Reconciler
@@ -108,6 +113,8 @@ type ReconcilePrometheusExt struct {
 	// that reads objects from the cache and writes to the apiserver
 	client client.Client
 	scheme *runtime.Scheme
+	// This client is for SCC creation
+	secClient secv1client.SecurityV1Interface
 }
 
 // Reconcile reads that state of the cluster for a PrometheusExt object and makes changes based on the state read
@@ -136,10 +143,11 @@ func (r *ReconcilePrometheusExt) Reconcile(request reconcile.Request) (reconcile
 		return reconcile.Result{}, err
 	}
 	reconsiler := reconsiler.Reconsiler{
-		Client:  r.client,
-		CR:      instance.DeepCopy(),
-		Schema:  r.scheme,
-		Context: ctx,
+		Client:    r.client,
+		SecClient: r.secClient,
+		CR:        instance.DeepCopy(),
+		Schema:    r.scheme,
+		Context:   ctx,
 	}
 	if err := reconsiler.ReadClusterState(); err != nil {
 		return reconcile.Result{}, err

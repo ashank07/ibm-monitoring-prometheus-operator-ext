@@ -138,9 +138,6 @@ func mcmDeploymentSpec(cr *promext.PrometheusExt) (*appsv1.DeploymentSpec, error
 }
 
 func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
-	drops := []v1.Capability{"ALL"}
-	pe := false
-	p := false
 	prometheus, perr := NewPrometheus(cr)
 	prometheus.Spec.PodMetadata.CreationTimestamp = *creationTime
 	if perr != nil {
@@ -163,14 +160,7 @@ func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 		Name:            "mcm",
 		Image:           *imageName(os.Getenv(mcmImageEnv), cr.Spec.MCMMonitor.Image),
 		ImagePullPolicy: cr.Spec.ImagePolicy,
-		SecurityContext: &v1.SecurityContext{
-			AllowPrivilegeEscalation: &pe,
-			Privileged:               &p,
-			Capabilities: &v1.Capabilities{
-				Drop: drops,
-			},
-		},
-		Resources: cr.Spec.MCMMonitor.Resources,
+		Resources:       cr.Spec.MCMMonitor.Resources,
 		Env: []v1.EnvVar{
 			{
 				Name:  "NAMESPACES",

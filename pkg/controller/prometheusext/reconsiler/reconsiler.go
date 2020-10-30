@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	promev1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
+	secv1client "github.com/openshift/client-go/security/clientset/versioned/typed/security/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	apisv1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -45,6 +46,8 @@ type Reconsiler struct {
 	Schema       *runtime.Scheme
 	Context      context.Context
 	Client       client.Client
+	// This client is for SCC creation
+	SecClient secv1client.SecurityV1Interface
 }
 
 // ClusterState store current state of observed objects in the cluster
@@ -93,6 +96,12 @@ func (r *Reconsiler) ReadClusterState() error {
 
 // Sync makes cluster state as expected
 func (r *Reconsiler) Sync() error {
+	err := promodel.CreateOrUpdateSCC(r.SecClient)
+	if err != nil {
+		log.Error(err, "Fail to reconsile SCC")
+		return err
+	}
+	log.Info("SCC is reconciled")
 	r.updateStatus()
 	if err := r.syncStorageClass(); err != nil {
 		return err
