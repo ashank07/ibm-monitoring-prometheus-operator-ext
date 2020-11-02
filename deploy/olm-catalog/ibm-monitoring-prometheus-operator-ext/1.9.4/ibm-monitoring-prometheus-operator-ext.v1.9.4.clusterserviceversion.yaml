@@ -412,7 +412,7 @@ spec:
             - apiGroups:
               - security.openshift.io
               resourceNames:
-              - ibm-monitoring-grafana-scc
+              - ibm-monitoring-prometheus-scc
               resources:
               - securitycontextconstraints
               verbs:
@@ -422,7 +422,7 @@ spec:
             - apiGroups:
               - security.openshift.io
               resourceNames:
-              - ibm-monitoring-grafana-scc
+              - ibm-monitoring-prometheus-scc
               resources:
               - securitycontextconstraints
               verbs:
