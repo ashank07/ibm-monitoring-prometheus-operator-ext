@@ -39,25 +39,6 @@ metadata:
     app.kubernetes.io/instance: common-monitoring
     app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
   creationTimestamp: null
-  name: ibm-monitoring-prometheus-scc-use
-rules:
-- apiGroups:
-  - security.openshift.io
-  resourceNames:
-  - ibm-monitoring-prometheus-scc
-  resources:
-  - securitycontextconstraints
-  verbs:
-  - use
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  labels:
-    app.kubernetes.io/name: ibm-monitoring
-    app.kubernetes.io/instance: common-monitoring
-    app.kubernetes.io/managed-by: ibm-monitoring-prometheusext-operator
-  creationTimestamp: null
   name: prometheus-operator-role
 rules:
 - apiGroups:

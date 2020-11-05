@@ -96,7 +96,7 @@ func (r *Reconsiler) ReadClusterState() error {
 
 // Sync makes cluster state as expected
 func (r *Reconsiler) Sync() error {
-	err := promodel.CreateOrUpdateSCC(r.SecClient)
+	err := promodel.CreateOrUpdateSCC(r.SecClient, r.CR.Namespace)
 	if err != nil {
 		log.Error(err, "Fail to reconsile SCC")
 		return err

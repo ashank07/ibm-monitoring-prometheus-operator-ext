@@ -410,26 +410,6 @@ spec:
           serviceAccountName: ibm-monitoring-prometheusext-operand
         - rules:
             - apiGroups:
-              - security.openshift.io
-              resourceNames:
-              - ibm-monitoring-prometheus-scc
-              resources:
-              - securitycontextconstraints
-              verbs:
-              - use
-          serviceAccountName: ibm-monitoring-mcm-ctl
-        - rules:
-            - apiGroups:
-              - security.openshift.io
-              resourceNames:
-              - ibm-monitoring-prometheus-scc
-              resources:
-              - securitycontextconstraints
-              verbs:
-              - use
-          serviceAccountName: ibm-monitoring-prometheusext-operand
-        - rules:
-            - apiGroups:
               - certmanager.k8s.io
               resources:
               - clusterissuers
