@@ -44,7 +44,7 @@ spec:
                       - s390x
       containers:
         - name: ibm-monitoring-prometheus-operator-ext
-          image: quay.io/opencloudio/ibm-monitoring-prometheusext-operator:1.9.1
+          image: quay.io/opencloudio/ibm-monitoring-prometheusext-operator
           command:
             - ibm-monitoring-prometheusext-operator
           imagePullPolicy: Always
