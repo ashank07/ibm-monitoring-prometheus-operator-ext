@@ -507,9 +507,9 @@ const (
         target_label: kubernetes_name
 
     metric_relabel_configs:
-      - source_labels: ['namespace']
+      - source_labels: ['kubernetes_namespace']
         regex: (.+)
-        target_label: kubernetes_namespace
+        target_label: namespace
     {{- if not .Standalone }}
       - source_labels: ['kubernetes_namespace']
         regex: (.*)
@@ -737,8 +737,14 @@ const (
         target_label: __param_module
         regex: (.*)
 
-  {{- if not .Standalone }}
     metric_relabel_configs:
+      - source_labels: ['kubernetes_namespace']
+        regex: (.+)
+        target_label: namespace
+      - source_labels: ['kubernetes_pod_name']
+        action: replace
+        target_label: pod
+  {{- if not .Standalone }}
       - source_labels: ['kubernetes_namespace']
         regex: (.*)
         target_label: hub_kubernetes_namespace
