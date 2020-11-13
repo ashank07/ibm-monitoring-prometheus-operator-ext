@@ -139,7 +139,7 @@ rules:
 - apiGroups:
   - certmanager.k8s.io
   resources:
-  - clusterissuers
+  - issuers
   verbs:
   - use
 ---
