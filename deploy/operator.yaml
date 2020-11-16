@@ -85,7 +85,7 @@ spec:
             - name: PROM_CONF_IMAGE
               value: quay.io/opencloudio/prometheus-config-reloader@sha256:6b7da1616b974530a35e92fdd6f337865f019498c389d093b1977ad422fc2dca
             - name: ROUTER_IMAGE
-              value: quay.io/opencloudio/icp-management-ingress@sha256:692dc5ad8b68d3445e787bdcc9a28fdfb50c82d93d1b990cc3378f35f516b78c
+              value: quay.io/opencloudio/icp-management-ingress@sha256:fa6650cd65f943d5d3c8c6fd84ae97abdd51396bed9b2ffaae2895b484435e26
             - name: MCM_HELPER_IMAGE
               value: quay.io/opencloudio/icp-initcontainer@sha256:78c7914777de08064511033fc1065f3b1d0f593f59b8147230cd2f9c2405abd0
             - name: MCM_IMAGE
