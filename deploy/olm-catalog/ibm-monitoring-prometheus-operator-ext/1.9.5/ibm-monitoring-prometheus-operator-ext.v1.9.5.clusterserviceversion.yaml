@@ -287,7 +287,6 @@ spec:
               - ""
               resources:
               - events
-              - namespaces
               verbs:
               - get
               - list
@@ -405,7 +404,6 @@ spec:
               - nodes/proxy
               - endpoints
               - pods
-              - configmaps
               verbs:
               - get
               - list
