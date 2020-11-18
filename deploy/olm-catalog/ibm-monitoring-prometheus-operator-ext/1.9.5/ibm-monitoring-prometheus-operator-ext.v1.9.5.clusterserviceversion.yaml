@@ -287,7 +287,6 @@ spec:
               - ""
               resources:
               - events
-              - namespaces
               verbs:
               - get
               - list
@@ -405,7 +404,6 @@ spec:
               - nodes/proxy
               - endpoints
               - pods
-              - configmaps
               verbs:
               - get
               - list
@@ -463,21 +461,21 @@ spec:
                       - name: OPERATOR_NAME
                         value: ibm-monitoring-prometheusext-operator
                       - name: AM_IMAGE
-                        value: quay.io/opencloudio/alertmanager@sha256:4810de4093d11a0e5477ffc252e47561d36bbea57b288246a33d561e25495355
+                        value: quay.io/opencloudio/alertmanager@sha256:117b757d57992ca420647943d20f9132db066cca69413b0f9026760cf078da68
                       - name: PROME_IMAGE
-                        value: quay.io/opencloudio/prometheus@sha256:249ad4ef431bffbb89712452d03ae601e621782e734b5342a35111f103cf4077
+                        value: quay.io/opencloudio/prometheus@sha256:02d4f877a5e4496fc6f98c39bbb01540f1c4c3ca7d24275c3d5a16f2cadd0d8c
                       - name: CM_RELOAD_IMAGE
-                        value: quay.io/opencloudio/configmap-reload@sha256:c55a9bac9ea08a6973dc89cd996352ab44207b677e255c005bf5b053273d7c31
+                        value: quay.io/opencloudio/configmap-reload@sha256:f2a1851c5defdbc834573b1c1a2402b4608d6432c62ba1372fe610b7a85b271c
                       - name: PROM_OP_IMAGE
-                        value: quay.io/opencloudio/prometheus-operator@sha256:fce768234f74d5841e883e8472f9ee1b3c7faa95eba6db4466175b6ee67fef6f
+                        value: quay.io/opencloudio/prometheus-operator@sha256:35a01d9bb51d43becc0983f53818590bef2d0a4e5cfde7b392eef390038f3ce6
                       - name: PROM_CONF_IMAGE
-                        value: quay.io/opencloudio/prometheus-config-reloader@sha256:6b7da1616b974530a35e92fdd6f337865f019498c389d093b1977ad422fc2dca
+                        value: quay.io/opencloudio/prometheus-config-reloader@sha256:40cfae4583c7cb4f0a24e979edfa4a46c549b71fd97b4330db666a90e8d6c631
                       - name: ROUTER_IMAGE
                         value: quay.io/opencloudio/icp-management-ingress@sha256:fa6650cd65f943d5d3c8c6fd84ae97abdd51396bed9b2ffaae2895b484435e26
                       - name: MCM_HELPER_IMAGE
                         value: quay.io/opencloudio/icp-initcontainer@sha256:78c7914777de08064511033fc1065f3b1d0f593f59b8147230cd2f9c2405abd0
                       - name: MCM_IMAGE
-                        value: quay.io/opencloudio/prometheus-controller@sha256:d64d137e17d16bc8ea36b20c6e75c1c02816e658525bb728487375d0be98e601
+                        value: quay.io/opencloudio/prometheus-controller@sha256:630a91d98f77fc58113016577e4e659eb0fb1b716cee9a9e2558c8eed3d140d2
                     image: quay.io/opencloudio/ibm-monitoring-prometheusext-operator
                     imagePullPolicy: Always
                     name: ibm-monitoring-prometheus-operator-ext
