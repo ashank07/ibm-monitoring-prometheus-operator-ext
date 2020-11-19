@@ -513,5 +513,5 @@ spec:
       url: https://www.prometheus.io/
   provider:
     name: IBM
-  replaces: ibm-monitoring-prometheus-operator-ext.v1.9.3
+  replaces: ibm-monitoring-prometheus-operator-ext.v1.9.4
   version: 1.9.5
