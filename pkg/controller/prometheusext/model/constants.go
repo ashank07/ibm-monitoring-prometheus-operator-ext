@@ -233,6 +233,9 @@ const (
               if ($arg_match[] = "helm_release_info") {
                  content_by_lua 'prom.write_release_response()';
               }
+	      if ($arg_match%5B%5D = "helm_release_info") {
+                 content_by_lua 'prom.write_release_response()';
+              }
               header_filter_by_lua_block {
                   ngx.header["Cache-control"] = "no-cache, no-store, must-revalidate"
                   ngx.header["Pragma"] = "no-cache"
