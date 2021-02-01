@@ -10,7 +10,7 @@ metadata:
     operatorframework.io/arch.amd64: supported
     operatorframework.io/arch.ppc64le: supported
   annotations:
-    olm.skipRange: "<1.9.6"
+    olm.skipRange: "<1.10.0"
     alm-examples: |-
       [
         {
@@ -95,7 +95,7 @@ metadata:
     repository: https://github.com/IBM/ibm-monitoring-prometheus-operator-ext
     containerImage: quay.io/opencloudio/ibm-monitoring-prometheusext-operator
     support: IBM
-  name: ibm-monitoring-prometheus-operator-ext.v1.9.6
+  name: ibm-monitoring-prometheus-operator-ext.v1.10.0
   namespace: placeholder
 spec:
   apiservicedefinitions: {}
@@ -527,4 +527,4 @@ spec:
       url: https://www.prometheus.io/
   provider:
     name: IBM
-  version: 1.9.6
+  version: 1.10.0
