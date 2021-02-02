@@ -1,6 +1,6 @@
 module github.com/IBM/ibm-monitoring-prometheus-operator-ext
 
-go 1.13
+go 1.15
 
 require (
 	github.com/coreos/prometheus-operator v0.34.1
@@ -48,6 +48,8 @@ replace (
 	github.com/Azure/go-autorest => github.com/Azure/go-autorest v13.3.4-0.20200207053602-7439e774c9e9+incompatible
 	github.com/jetstack/cert-manager => github.com/jetstack/cert-manager v0.10.0
 )
+
+replace github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
 
 replace github.com/docker/docker => github.com/moby/moby v0.7.3-0.20190826074503-38ab9da00309 // Required by Helm
 
